@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.1.1.1 2006-06-20 07:49:56 oops Exp $
+// $Id: krisp.php,v 1.2 2006-06-21 06:47:00 oops Exp $
 
 class _krisp
 {
@@ -28,10 +28,10 @@ class _krisp
 		'netmask'   => '',
 		'network'   => '',
 		'broadcast' => '',
-		'serv'      => '',
-		'org'       => '',
-		'code'      => '',
-		'nation'    => ''
+		'icode'     => '',
+		'iname'     => '',
+		'gcode'     => '',
+		'gname'     => ''
 	);
 
 	function _krisp ($dbr) {
@@ -78,8 +78,8 @@ class _krisp
 		$this->isp['netmask'] = $r[0]['netmask'];
 		$this->isp['network'] = $r[0]['network'];
 		$this->isp['broadcast'] = $r[0]['broadcast'];
-		$this->isp['org'] = $r[0]['organization'];
-		$this->isp['serv'] = $r[0]['servicename'];
+		$this->isp['iname'] = $r[0]['organization'];
+		$this->isp['icode'] = $r[0]['servicename'];
 
 		return 0;
 	}
@@ -88,10 +88,10 @@ class _krisp
 		$_tmp = explode ('.', $host);
 
 		if ( count ($_tmp) != 4 ) :
-			$this->isp['serv'] = '--';
-			$this->isp['org' ] = 'N/A';
-			$this->isp['code'] = '--';
-			$this->isp['nation' ] = 'N/A';
+			$this->isp['icode'] = '--';
+			$this->isp['iname'] = 'N/A';
+			$this->isp['gcode'] = '--';
+			$this->isp['gname'] = 'N/A';
 
 			return $this->isp;
 		endif;
@@ -124,15 +124,15 @@ class _krisp
 			endforeach;
 		endif;
 
-		if ( ! trim ($this->isp['serv']) ) :
-			$this->isp['serv'] = '--';
-			$this->isp['org'] = 'N/A';
+		if ( ! trim ($this->isp['icode']) ) :
+			$this->isp['icode'] = '--';
+			$this->isp['iname'] = 'N/A';
 		endif;
 
 		if ( extension_loaded ('geoip') && $dbr['gi'] != NULL ) :
 			$gir = GeoIP_id_by_name ($dbr['gi'], $host);
-			$this->isp['code'] = $gir['code'];
-			$this->isp['nation'] = $gir['name'];
+			$this->isp['gcode'] = $gir['code'];
+			$this->isp['gname'] = $gir['name'];
 		endif;
 
 		return $this->isp;
