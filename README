@@ -13,3 +13,9 @@ ftp://mirror.oops.org/pub/oops/php/extensions/mod_geoip/ 에서 받은 것으로 사용을
 
 다시 말하자면, mirror.oops.org 에 있는 mod_geoip 는 maxmind.com 에서 제공하는 것
 과는 다른 extension 이다. (물론 기능은 같다)
+
+
+
+요구사항::
+
+krisp pear package 1.1.0 부터는 mod_geoip 1.1.0 이상 버전이 필요하다.

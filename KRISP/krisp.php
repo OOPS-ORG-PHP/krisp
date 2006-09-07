@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.2 2006-06-21 06:47:00 oops Exp $
+// $Id: krisp.php,v 1.3 2006-09-07 14:03:33 oops Exp $
 
 class _krisp
 {
@@ -31,7 +31,8 @@ class _krisp
 		'icode'     => '',
 		'iname'     => '',
 		'gcode'     => '',
-		'gname'     => ''
+		'gname'     => '',
+		'gcity'     => ''
 	);
 
 	function _krisp ($dbr) {
@@ -92,6 +93,7 @@ class _krisp
 			$this->isp['iname'] = 'N/A';
 			$this->isp['gcode'] = '--';
 			$this->isp['gname'] = 'N/A';
+			$this->isp['gcity'] = 'N/A';
 
 			return $this->isp;
 		endif;
@@ -129,10 +131,30 @@ class _krisp
 			$this->isp['iname'] = 'N/A';
 		endif;
 
-		if ( extension_loaded ('geoip') && $dbr['gi'] != NULL ) :
-			$gir = GeoIP_id_by_name ($dbr['gi'], $host);
-			$this->isp['gcode'] = $gir['code'];
-			$this->isp['gname'] = $gir['name'];
+		if ( extension_loaded ('geoip') ) :
+			if ( is_resource ($dbr['gi']['d']) ) :
+				$gir = GeoIP_id_by_name ($dbr['gi']['d'], $host);
+				$this->isp['gcode'] = $gir['code'];
+				$this->isp['gname'] = $gir['name'];
+			endif;
+			unset ($gir);
+			if ( is_resource ($dbr['gi']['c']) ) :
+				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
+				if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
+					$this->isp['gcity'] = $gir['region'] . " ";
+				endif;
+				$this->isp['gcity'] .= $gir['city'];
+
+				if ( ! $this->isp['gcity'] ) :
+					$this->isp['gcity'] = "N/A";
+				endif;
+			endif;
+			if ( is_resource ($dbr['gi']['p']) ) :
+				$gisp = GeoIP_org_by_name ($dbr['gi']['p'], $host);
+				if ( $gisp && $this->isp['iname'] == 'N/A' ) :
+					$this->isp['iname'] = $gisp;
+				endif;
+			endif;
 		endif;
 
 		return $this->isp;
