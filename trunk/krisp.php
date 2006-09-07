@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.1.1.1 2006-06-20 07:49:56 oops Exp $
+// $Id: krisp.php,v 1.2 2006-09-07 14:03:33 oops Exp $
 
 require_once 'PEAR.php';
 
@@ -26,13 +26,13 @@ $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
  * PEAR's krisp:: interface. Defines the php extended krisp library
  *
  * @access public
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  * @package eSystem
  */
 class krisp extends PEAR
 {
-	var $version = "1.0.4";
-	var $uversion = "001000004";
+	var $version = "1.1.0";
+	var $uversion = "001001000";
 	var $dbtype = 'sqlite';
 	var $db;
 	var $err;
@@ -57,9 +57,17 @@ class krisp extends PEAR
 		endif;
 
 		if ( extension_loaded ('geoip') ) :
-			$gi = GeoIP_open ();
+			$gi['d'] = GeoIP_open ();
+			$gi['c'] = GeoIP_open (GEOIP_CITY_EDITION_REV0, GEOIP_MEMORY_CACHE|GEOIP_CHECK_CACHE);
+			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, GEOIP_MEMORY_CACHE|GEOIP_CHECK_CACHE);
 		else :
-			$gi = NULL;
+			if ( @ dl ('geoip.so') ) :
+				$gi['d'] = GeoIP_open ();
+				$gi['c'] = GeoIP_open (GEOIP_CITY_EDITION_REV0, GEOIP_MEMORY_CACHE|GEOIP_CHECK_CACHE);
+				$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, GEOIP_MEMORY_CACHE|GEOIP_CHECK_CACHE);
+			else :
+				$gi = NULL;
+			endif;
 		endif;
 
 		$r = array ('handle' => $c, 'type' => $this->db->type, 'gi' => $gi);
@@ -79,8 +87,14 @@ class krisp extends PEAR
 
 	function kr_close ($dbr) {
 		$this->db->kr_dbClose ($dbr['handle']);
-		if ( $gi != NULL ) :
-			GeoIP_close ($dbr['gi']);
+		if ( is_resource ($dbr['gi']['d']) ) :
+			GeoIP_close ($dbr['gi']['d']);
+		endif;
+		if ( is_resource ($dbr['gi']['c']) ) :
+			GeoIP_close ($dbr['gi']['c']);
+		endif;
+		if ( is_resource ($dbr['gi']['p']) ) :
+			GeoIP_close ($dbr['gi']['p']);
 		endif;
 	}
 
