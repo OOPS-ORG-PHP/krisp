@@ -46,8 +46,9 @@ endif;
  *             broadcast,
  *             serv,       // ISP code
  *             org,        // ISP name
- *             code,       // GeoIP code
- *             nation,     // GeoIP name
+ *             gcode,      // GeoIP code
+ *             gname,      // GeoIP name
+ *             gcity,      // GeoIP city name
  *            );
  *
  */
