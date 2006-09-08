@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
+<package version="1.0">
+  <name>krisp</name>
+  <summary>php pure code for search krisp database</summary>
+  <description>PEAR's krisp:: package support search krisp and GeoIP database.</description>
+  <maintainers>
+    <maintainer>
+      <user>oops</user>
+      <name>JoungKyun.Kim</name>
+      <email>admin@oops.org</email>
+      <role>lead</role>
+    </maintainer>
+  </maintainers>
+  <release>
+    <version>1.1.1</version>
+    <date>2006-09-09</date>
+    <license>PHP/LGPL</license>
+    <state>stable</state>
+    <notes>-change memory type
+</notes>
+    <filelist>
+      <file role="php" md5sum="@krisp.php@" name="krisp.php"/>
+      <file role="php" md5sum="@krisp/db.php@" name="krisp/db.php"/>
+      <file role="php" md5sum="@krisp/krisp.php@" name="krisp/krisp.php"/>
+      <file role="php" md5sum="@krisp/pdo.php@" name="krisp/pdo.php"/>
+      <file role="php" md5sum="@krisp/sqlite.php@" name="krisp/sqlite.php"/>
+    </filelist>
+  </release>
+  <changelog>
+    <release>
+      <version>1.0.4</version>
+      <date>2006-06-20</date>
+      <state>stable</state>
+      <notes>- first release
+</notes>
+    </release>
+    <release>
+      <version>1.1.0</version>
+      <date>2006-09-07</date>
+      <state>stable</state>
+      <notes>- support GeoIPCITY (if you have)
+- support GeoIPISP (if you have)
+- support GeoIPORG (if you have)
+- required over mod_geoip 1.1.0
+</notes>
+    </release>
+  <release>
+    <version>1.1.1</version>
+    <date>2006-09-09</date>
+    <license>PHP/LGPL</license>
+    <state>stable</state>
+    <notes>-change memory type
+</notes>
+    </release>
+    <release>
+    </release>
+  </changelog>
+</package>
