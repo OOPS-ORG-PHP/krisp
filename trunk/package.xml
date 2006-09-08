@@ -13,14 +13,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.1.0</version>
-    <date>2006-09-07</date>
+    <version>1.1.1</version>
+    <date>2006-09-09</date>
     <license>PHP/LGPL</license>
     <state>stable</state>
-    <notes>- support GeoIPCITY (if you have)
-- support GeoIPISP (if you have)
-- support GeoIPORG (if you have)
-- required over mod_geoip 1.1.0
+    <notes>-change memory type
 </notes>
     <filelist>
       <file role="php" md5sum="@krisp.php@" name="krisp.php"/>
@@ -46,6 +43,14 @@
 - support GeoIPISP (if you have)
 - support GeoIPORG (if you have)
 - required over mod_geoip 1.1.0
+</notes>
+    </release>
+  <release>
+    <version>1.1.1</version>
+    <date>2006-09-09</date>
+    <license>PHP/LGPL</license>
+    <state>stable</state>
+    <notes>-change memory type
 </notes>
     </release>
     <release>
