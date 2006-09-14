@@ -16,9 +16,9 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.5 2006-09-14 13:10:03 oops Exp $
+// $Id: krisp.php,v 1.6 2006-09-14 17:29:09 oops Exp $
 
-class _krisp
+class krisp_engine
 {
 	var $db;
 	var $err;
@@ -37,9 +37,9 @@ class _krisp
 		'gcity'     => ''
 	);
 
-	function _krisp ($dbr) {
+	function krisp_engine ($dbr) {
 		require_once 'krisp/db.php';
-		$this->db = new krdb ($dbr['type']);
+		$this->db = new krisp_db ($dbr['type']);
 	}
 
 	function get_netmask ($dbh, $aclass) {

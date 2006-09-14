@@ -16,9 +16,9 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: db.php,v 1.1.1.1 2006-06-20 07:49:56 oops Exp $
+// $Id: db.php,v 1.2 2006-09-14 17:29:09 oops Exp $
 
-class krdb
+class krisp_db
 {
 	var $type;
 	var $db;
@@ -31,10 +31,10 @@ class krdb
 		'mysql'   => 'mysql'
 	);
 
-	function krdb ($t) {
+	function krisp_db ($t) {
 		$this->type = $t;
-		$this->otype = ( $t == 'sqlite' ) ? $t : '_pdo';
-		$openfile = ($this->otype == '_pdo') ? 'pdo' : $t;
+		$this->otype = ( $t == 'sqlite' ) ? "krisp_{$t}" : 'krisp_pdo';
+		$openfile = ($this->otype == 'krisp_pdo') ? 'pdo' : $t;
 
 		require_once $openfile . ".php";
 		$this->db = new $this->otype;
