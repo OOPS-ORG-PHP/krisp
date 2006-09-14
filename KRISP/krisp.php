@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.4 2006-09-14 13:04:57 oops Exp $
+// $Id: krisp.php,v 1.5 2006-09-14 13:10:03 oops Exp $
 
 class _krisp
 {
@@ -33,6 +33,7 @@ class _krisp
 		'iname'     => '',
 		'gcode'     => '',
 		'gname'     => '',
+		'gregion'   => '',
 		'gcity'     => ''
 	);
 
@@ -94,9 +95,11 @@ class _krisp
 			$this->isp['iname'] = 'N/A';
 			$this->isp['gcode'] = '--';
 			$this->isp['gname'] = 'N/A';
+			$this->isp['gregion'] = 'N/A';
 			$this->isp['gcity'] = 'N/A';
 
 			if ( ! $this->geocity ) :
+				unset ($this->isp['gregion']);
 				unset ($this->isp['gcity']);
 			endif;
 
@@ -144,11 +147,18 @@ class _krisp
 			endif;
 			unset ($gir);
 			if ( is_resource ($dbr['gi']['c']) ) :
+				require_once 'krisp/georegion.php';
 				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
-				if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
-					$this->isp['gcity'] = $gir['region'] . " ";
-				endif;
-				$this->isp['gcity'] .= $gir['city'];
+				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
+				#	$this->isp['gcity'] = $gir['region'] . " ";
+				#endif;
+				#$this->isp['gcity'] .= $gir['city'];
+
+				$gvar = ( $this->isp['gcode'] == 'CA' || $this->isp['gcode'] == 'US' ) ?
+						'ISO' : 'FIPS';
+				# region => ${$gvar}[nation_code][region_code]
+				$this->isp['gregion'] = ${$gvar}[$this->isp['gcode']][$gir['region']];
+				$this->isp['gcity'] = $gir['city'];
 
 				if ( ! $this->isp['gcity'] ) :
 					$this->isp['gcity'] = "N/A";
@@ -163,6 +173,7 @@ class _krisp
 		endif;
 
 		if ( ! $this->geocity ) :
+			unset ($this->isp['gregion']);
 			unset ($this->isp['gcity']);
 		endif;
 
