@@ -1,6 +1,7 @@
 #!/bin/sh
+# $Id: krisp.pack.sh,v 1.2 2006-09-14 13:08:43 oops Exp $
 
-ver=$(cat version)
+ver=$(cat version | grep -v "^#")
 tpp=$$
 
 tmp=/tmp/krisp.${tpp}
