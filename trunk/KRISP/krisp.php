@@ -16,12 +16,13 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.3 2006-09-07 14:03:33 oops Exp $
+// $Id: krisp.php,v 1.4 2006-09-14 13:04:57 oops Exp $
 
 class _krisp
 {
 	var $db;
 	var $err;
+	var $geocity = 0;
 	var $isp = array (
 		'key'       => '',
 		'ip'        => '',
@@ -95,6 +96,10 @@ class _krisp
 			$this->isp['gname'] = 'N/A';
 			$this->isp['gcity'] = 'N/A';
 
+			if ( ! $this->geocity ) :
+				unset ($this->isp['gcity']);
+			endif;
+
 			return $this->isp;
 		endif;
 
@@ -155,6 +160,10 @@ class _krisp
 					$this->isp['iname'] = $gisp;
 				endif;
 			endif;
+		endif;
+
+		if ( ! $this->geocity ) :
+			unset ($this->isp['gcity']);
 		endif;
 
 		return $this->isp;

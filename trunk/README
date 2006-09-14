@@ -19,3 +19,9 @@ ftp://mirror.oops.org/pub/oops/php/extensions/mod_geoip/ 에서 받은 것으로 사용을
 요구사항::
 
 krisp pear package 1.1.0 부터는 mod_geoip 1.1.0 이상 버전이 필요하다.
+
+
+관련문서::
+
+사용법이나 기타 사항에 대해서는 http://devel.oops.org/index.php?c=5 를 참조한다.
+pear_krisp pear package document is located in http://devel.oops.org/index.php?c=5

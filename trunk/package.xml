@@ -13,11 +13,12 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.1.1</version>
-    <date>2006-09-09</date>
+    <version>1.1.2</version>
+    <date>2006-09-14</date>
     <license>PHP/LGPL</license>
     <state>stable</state>
-    <notes>-change memory type
+    <notes>- add goeip city database search on/off function
+- add GeoIP database open type
 </notes>
     <filelist>
       <file role="php" md5sum="@krisp.php@" name="krisp.php"/>
@@ -51,6 +52,15 @@
     <license>PHP/LGPL</license>
     <state>stable</state>
     <notes>-change memory type
+</notes>
+    </release>
+  <release>
+    <version>1.1.2</version>
+    <date>2006-09-14</date>
+    <license>PHP/LGPL</license>
+    <state>stable</state>
+    <notes>- add goeip city database search on/off function
+- add GeoIP database open type
 </notes>
     </release>
     <release>

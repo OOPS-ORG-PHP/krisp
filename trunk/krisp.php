@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.3 2006-09-08 20:16:15 oops Exp $
+// $Id: krisp.php,v 1.4 2006-09-14 13:04:56 oops Exp $
 
 require_once 'PEAR.php';
 
@@ -26,7 +26,7 @@ $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
  * PEAR's krisp:: interface. Defines the php extended krisp library
  *
  * @access public
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @package eSystem
  */
 class krisp extends PEAR
@@ -36,10 +36,29 @@ class krisp extends PEAR
 	var $dbtype = 'sqlite';
 	var $db;
 	var $err;
+	var $geoipset = 0;
+	var $geocity = 0;
+	var $geoip_type;
+	var $geoisp_type;
+	var $geocity_type;
 
 	function krisp ($database = 'sqlite') {
 		require_once "krisp/db.php";
 		$this->db = new krdb ($database);
+
+		if ( extension_loaded ('geoip') ) :
+			$this->geoipset = 1;
+		else :
+			if ( @ dl ('geoip.so') ) :
+				$this->geoipset = 1;
+			endif;
+		endif;
+
+		if ( $geoipset ) :
+			$this->geoip_type   = '';
+			$this->geoisp_type  = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+			$this->geocity_type = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+		endif;
 	}
 
 	function krisp_version () {
@@ -56,18 +75,12 @@ class krisp extends PEAR
 			$this->err = $this->db->kr_dbError ();
 		endif;
 
-		if ( extension_loaded ('geoip') ) :
-			$gi['d'] = GeoIP_open ();
-			$gi['c'] = GeoIP_open (GEOIP_CITY_EDITION_REV0, GEOIP_INDEX_CACHE|GEOIP_CHECK_CACHE);
-			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, GEOIP_INDEX_CACHE|GEOIP_CHECK_CACHE);
-		else :
-			if ( @ dl ('geoip.so') ) :
-				$gi['d'] = GeoIP_open ();
-				$gi['c'] = GeoIP_open (GEOIP_CITY_EDITION_REV0, GEOIP_INDEX_CACHE|GEOIP_CHECK_CACHE);
-				$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, GEOIP_INDEX_CACHE|GEOIP_CHECK_CACHE);
-			else :
-				$gi = NULL;
-			endif;
+		$gi = NULL;
+
+		if ( $this->geoipset ) :
+			$gi['d'] = GeoIP_open ($this->goeip_type);
+			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, $this->geoisp_type);
+			$gi['c'] = (geocity) ? GeoIP_open (GEOIP_CITY_EDITION_REV0, $this->geocity_type) : NULL;
 		endif;
 
 		$r = array ('handle' => $c, 'type' => $this->db->type, 'gi' => $gi);
@@ -78,6 +91,8 @@ class krisp extends PEAR
 	function kr_search ($dbr, $host) {
 		require_once 'krisp/krisp.php';
 		$s = new _krisp ($dbr);
+
+		$s->geocity = $this->geocity;
 
 		$host = gethostbyname ($host);
 		$r = $s->search ($dbr, $host);
