@@ -16,9 +16,9 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: pdo.php,v 1.1.1.1 2006-06-20 07:49:56 oops Exp $
+// $Id: pdo.php,v 1.2 2006-09-14 17:29:09 oops Exp $
 
-class _pdo
+class krisp_pdo
 {
 	var $err;
 

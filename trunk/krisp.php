@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.4 2006-09-14 13:04:56 oops Exp $
+// $Id: krisp.php,v 1.5 2006-09-14 17:29:09 oops Exp $
 
 require_once 'PEAR.php';
 
@@ -26,7 +26,7 @@ $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
  * PEAR's krisp:: interface. Defines the php extended krisp library
  *
  * @access public
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @package eSystem
  */
 class krisp extends PEAR
@@ -44,7 +44,7 @@ class krisp extends PEAR
 
 	function krisp ($database = 'sqlite') {
 		require_once "krisp/db.php";
-		$this->db = new krdb ($database);
+		$this->db = new krisp_db ($database);
 
 		if ( extension_loaded ('geoip') ) :
 			$this->geoipset = 1;
@@ -90,7 +90,7 @@ class krisp extends PEAR
 
 	function kr_search ($dbr, $host) {
 		require_once 'krisp/krisp.php';
-		$s = new _krisp ($dbr);
+		$s = new krisp_engine ($dbr);
 
 		$s->geocity = $this->geocity;
 
