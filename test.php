@@ -19,6 +19,19 @@ $kr = new krisp ("sqlite3");
  * resource krisp::kr_open (database_path)
  *
  * if failed, return FALSE
+ *
+ * $kr->geocity = 1   => search GeoIPCity database. set 0, don't search
+ * $kr->geo_type      => GeoIP database open type (default: GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE)
+ * $kr->geoisp_type   => GeoIPISP database open type (default: GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE)
+ * $kr->geocity_type  => GeoIPCity database open type (default: GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE)
+ *
+ * GeoIP database open type :
+ *       GEOIP_STANDARD
+ *       GEOIP_MEMORY_CACHE
+ *       GEOIP_INDEX_CACHE
+ *       GEOIP_CEHCK_CACHE
+ *       see also GeoIP C API Source code (GeoIP_new)
+ *
  */
 $c = $kr->kr_open ("/usr/share/krisp/krisp.dat");
 
