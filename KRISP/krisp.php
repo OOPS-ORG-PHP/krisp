@@ -16,13 +16,15 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.6 2006-09-14 17:29:09 oops Exp $
+// $Id: krisp.php,v 1.7 2006-09-15 19:46:18 oops Exp $
 
 class krisp_engine
 {
 	var $db;
 	var $err;
 	var $geocity = 0;
+	var $ISO;
+	var $FIPS:
 	var $isp = array (
 		'key'       => '',
 		'ip'        => '',
@@ -39,7 +41,10 @@ class krisp_engine
 
 	function krisp_engine ($dbr) {
 		require_once 'krisp/db.php';
+		require 'krisp/georegion.php';
 		$this->db = new krisp_db ($dbr['type']);
+		$this->ISO = $ISO;
+		$this->FIPS = $FIPS;
 	}
 
 	function get_netmask ($dbh, $aclass) {
@@ -147,7 +152,6 @@ class krisp_engine
 			endif;
 			unset ($gir);
 			if ( is_resource ($dbr['gi']['c']) ) :
-				require_once 'krisp/georegion.php';
 				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
 				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
 				#	$this->isp['gcity'] = $gir['region'] . " ";
@@ -157,7 +161,7 @@ class krisp_engine
 				$gvar = ( $this->isp['gcode'] == 'CA' || $this->isp['gcode'] == 'US' ) ?
 						'ISO' : 'FIPS';
 				# region => ${$gvar}[nation_code][region_code]
-				$this->isp['gregion'] = ${$gvar}[$this->isp['gcode']][$gir['region']];
+				$this->isp['gregion'] = $this->{$gvar}[$this->isp['gcode']][$gir['region']];
 				$this->isp['gcity'] = $gir['city'];
 
 				if ( ! $this->isp['gcity'] ) :
