@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: db.php,v 1.2 2006-09-14 17:29:09 oops Exp $
+// $Id: db.php,v 1.3 2006-11-29 09:33:56 oops Exp $
 
 class krisp_db
 {
@@ -41,6 +41,11 @@ class krisp_db
 	}
 
 	function kr_dbConnect ($database) {
+		if ( ! trim ($database) ) :
+			$this->err = "nothing database name";
+			return FALSE;
+		endif;
+
 		switch ($this->type) :
 			case 'sqlite' :
 				break;
@@ -53,6 +58,7 @@ class krisp_db
 		if ( $c === FALSE ) :
 			$this->err = $this->db->sql_error ();
 		endif;
+
 		return $c;
 	}
 
