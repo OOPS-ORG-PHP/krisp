@@ -1,4 +1,4 @@
-$Id: README,v 1.4 2006-09-14 13:08:43 oops Exp $
+$Id: README,v 1.5 2006-11-29 09:34:38 oops Exp $
 
 PEAR krisp::
 
@@ -21,6 +21,7 @@ ftp://mirror.oops.org/pub/oops/php/extensions/mod_geoip/ 에서 받은 것으로 사용을
 요구사항::
 
 krisp pear package 1.1.0 부터는 mod_geoip 1.1.0 이상 버전이 필요하다.
+krisp pear package 1.2.0 부터는 libkrisp 2.1.0 이상 버전이 필요하다.
 
 
 관련문서::
