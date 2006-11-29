@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.7 2006-09-15 19:46:18 oops Exp $
+// $Id: krisp.php,v 1.8 2006-11-29 07:20:33 oops Exp $
 
 class krisp_engine
 {
@@ -24,7 +24,7 @@ class krisp_engine
 	var $err;
 	var $geocity = 0;
 	var $ISO;
-	var $FIPS:
+	var $FIPS;
 	var $isp = array (
 		'key'       => '',
 		'ip'        => '',
