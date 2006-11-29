@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.5 2006-09-14 17:29:09 oops Exp $
+// $Id: krisp.php,v 1.6 2006-11-29 09:33:56 oops Exp $
 
 require_once 'PEAR.php';
 
@@ -26,13 +26,13 @@ $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
  * PEAR's krisp:: interface. Defines the php extended krisp library
  *
  * @access public
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @package eSystem
  */
 class krisp extends PEAR
 {
-	var $version = "1.1.1";
-	var $uversion = "001001001";
+	var $version = "1.2.0";
+	var $uversion = "001002000";
 	var $dbtype = 'sqlite';
 	var $db;
 	var $err;
@@ -69,11 +69,30 @@ class krisp extends PEAR
 		return $this->uversion;
 	}
 
+	function kr_userdb ($f) {
+		$u = '';
+
+		if ( file_exists ($f . "-userdb") ) :
+			$u = $f . "-userdb";
+		else : 
+			preg_match ('/(.*)\.dat/', $f, $m);
+			$u = $m[1] . "-userdb.dat";
+
+			$u = file_exists ($u) ? $u : '';
+		endif; 
+        
+		return $u;
+	}
+
 	function kr_open ($database) {
 		$c = $this->db->kr_dbConnect ($database);
 		if ( $c === FALSE ) :
 			$this->err = $this->db->kr_dbError ();
+			return FALSE;
 		endif;
+
+		/* connect user database */
+		$u = $this->db->kr_dbConnect ($this->kr_userdb ($database));
 
 		$gi = NULL;
 
@@ -83,7 +102,7 @@ class krisp extends PEAR
 			$gi['c'] = (geocity) ? GeoIP_open (GEOIP_CITY_EDITION_REV0, $this->geocity_type) : NULL;
 		endif;
 
-		$r = array ('handle' => $c, 'type' => $this->db->type, 'gi' => $gi);
+		$r = array ('handle' => $c, 'uhandle' => $u, 'type' => $this->db->type, 'gi' => $gi);
 		
 		return $r;
 	}
@@ -102,6 +121,7 @@ class krisp extends PEAR
 
 	function kr_close ($dbr) {
 		$this->db->kr_dbClose ($dbr['handle']);
+		$this->db->kr_dbClose ($dbr['uhandle']);
 		if ( is_resource ($dbr['gi']['d']) ) :
 			GeoIP_close ($dbr['gi']['d']);
 		endif;

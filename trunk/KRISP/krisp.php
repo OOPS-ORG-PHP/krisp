@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.8 2006-11-29 07:20:33 oops Exp $
+// $Id: krisp.php,v 1.9 2006-11-29 09:33:56 oops Exp $
 
 class krisp_engine
 {
@@ -31,12 +31,22 @@ class krisp_engine
 		'netmask'   => '',
 		'network'   => '',
 		'broadcast' => '',
+		'icode'     => '--',
+		'iname'     => 'N/A',
+		'ccode'     => '--',
+		'cname'     => 'N/A',
+		'city'      => 'N/A',
+		'region'    => 'N/A'
+	);
+
+	var $host = array (
+		'ccode'     => '',
+		'cname'     => '',
 		'icode'     => '',
 		'iname'     => '',
-		'gcode'     => '',
-		'gname'     => '',
-		'gregion'   => '',
-		'gcity'     => ''
+		'city'      => '',
+		'region'    => '',
+		'flag'      => 0
 	);
 
 	function krisp_engine ($dbr) {
@@ -86,8 +96,45 @@ class krisp_engine
 		$this->isp['netmask'] = $r[0]['netmask'];
 		$this->isp['network'] = $r[0]['network'];
 		$this->isp['broadcast'] = $r[0]['broadcast'];
-		$this->isp['iname'] = $r[0]['organization'];
-		$this->isp['icode'] = $r[0]['servicename'];
+		$this->isp['iname'] = $r[0]['organization'] ? $r[0]['organization'] : 'N/A';
+		$this->isp['icode'] = $r[0]['servicename'] ? $r[0]['servicename'] : '--';
+
+		if ( $this->isp['iname'] != 'N/A' && $this->isp['icode'] == '--' ) :
+			$this->isp['icode'] = $this->isp['iame'];
+		endif;
+
+		if ( $this->isp['icode'] ) :
+			$this->isp['ccode'] = 'KR';
+			$this->isp['cname'] = 'Korea, Republic of';
+		endif;
+
+		return 0;
+	}
+
+	function getHostInfo ($dbh, $host) {
+		$_tmp = explode ('.', $host);
+		$cclass = "{$_tmp[0]}.{$_tmp[1]}.{$_tmp[2]}.0";
+		$net = bindec ($this->kr_ip2long ($cclass));
+
+		$sql = sprintf ('SELECT * FROM userdb WHERE longip = \'%s\'', $net);
+		$r = $this->db->kr_dbSelect ($dbh, $sql);
+
+		if ( $r === FALSE ) :
+			$this->err = $this->db->kr_dbError ();
+			return 1;
+		endif;
+
+		$this->host['ccode']  = $r[0]['country_code'];
+		$this->host['cname']  = $r[0]['country'];
+		$this->host['icode']  = $r[0]['isp_code'];
+		$this->host['iname']  = $r[0]['isp'];
+		$this->host['city']   = $r[0]['city'];
+		$this->host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
+
+		if ( preg_match ('/([^,]+),(.*)/', $this->host['city'], $m) ) :
+			$this->host['city'] = $m[1];
+			$this->host['retion'] = $m[2];
+		endif;
 
 		return 0;
 	}
@@ -96,18 +143,6 @@ class krisp_engine
 		$_tmp = explode ('.', $host);
 
 		if ( count ($_tmp) != 4 ) :
-			$this->isp['icode'] = '--';
-			$this->isp['iname'] = 'N/A';
-			$this->isp['gcode'] = '--';
-			$this->isp['gname'] = 'N/A';
-			$this->isp['gregion'] = 'N/A';
-			$this->isp['gcity'] = 'N/A';
-
-			if ( ! $this->geocity ) :
-				unset ($this->isp['gregion']);
-				unset ($this->isp['gcity']);
-			endif;
-
 			return $this->isp;
 		endif;
 
@@ -147,39 +182,72 @@ class krisp_engine
 		if ( extension_loaded ('geoip') ) :
 			if ( is_resource ($dbr['gi']['d']) ) :
 				$gir = GeoIP_id_by_name ($dbr['gi']['d'], $host);
-				$this->isp['gcode'] = $gir['code'];
-				$this->isp['gname'] = $gir['name'];
+				$this->isp['ccode'] = $gir['code'];
+				$this->isp['cname'] = $gir['name'];
 			endif;
 			unset ($gir);
 			if ( is_resource ($dbr['gi']['c']) ) :
 				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
 				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
-				#	$this->isp['gcity'] = $gir['region'] . " ";
+				#	$this->isp['city'] = $gir['region'] . " ";
 				#endif;
-				#$this->isp['gcity'] .= $gir['city'];
+				#$this->isp['city'] .= $gir['city'];
 
-				$gvar = ( $this->isp['gcode'] == 'CA' || $this->isp['gcode'] == 'US' ) ?
+				$gvar = ( $this->isp['ccode'] == 'CA' || $this->isp['ccode'] == 'US' ) ?
 						'ISO' : 'FIPS';
 				# region => ${$gvar}[nation_code][region_code]
-				$this->isp['gregion'] = $this->{$gvar}[$this->isp['gcode']][$gir['region']];
-				$this->isp['gcity'] = $gir['city'];
+				$this->isp['region'] = $this->{$gvar}[$this->isp['ccode']][$gir['region']];
+				$this->isp['city'] = $gir['city'];
 
-				if ( ! $this->isp['gcity'] ) :
-					$this->isp['gcity'] = "N/A";
+				if ( ! $this->isp['city'] ) :
+					$this->isp['city'] = "N/A";
 				endif;
 			endif;
 			if ( is_resource ($dbr['gi']['p']) ) :
 				$gisp = GeoIP_org_by_name ($dbr['gi']['p'], $host);
 				if ( $gisp && $this->isp['iname'] == 'N/A' ) :
+					$this->isp['icode'] = $gisp;
 					$this->isp['iname'] = $gisp;
 				endif;
 			endif;
 		endif;
 
-		if ( ! $this->geocity ) :
-			unset ($this->isp['gregion']);
-			unset ($this->isp['gcity']);
+		if ( ! $this->getHostInfo ($dbr['uhandle'], $this->isp['ip']) ) :
+			if ( $this->host['flag'] ) :
+				$this->isp['ccode'] = $this->host['ccode'] ? $this->host['ccode'] : $this->isp['ccode'];
+				$this->isp['cname'] = $this->host['cname'] ? $this->host['cname'] : $this->isp['cname'];
+				$this->isp['icode'] = $this->host['icode'] ? $this->host['icode'] : $this->isp['icode'];
+				$this->isp['iname'] = $this->host['iname'] ? $this->host['iname'] : $this->isp['iname'];
+				$this->isp['city'] = $this->host['city'] ? $this->host['city'] : $this->isp['city'];
+				$this->isp['region'] = $this->host['region'] ? $this->host['region'] : $this->isp['region'];
+				if ( $this->host['city'] && ! $this->host['region'] ) :
+					$this->isp['region'] = 'N/A';
+				endif;
+			else :
+				if ( $this->isp['ccode'] == "--" && $this->host['ccode'] ) :
+					$this->isp['ccode'] = $this->host['ccode'];
+				endif;
+				if ( $this->isp['cname'] == "N/A" && $this->host['cname'] ) :
+					$this->isp['cname'] = $this->host['cname'];
+				endif;
+
+				if ( $this->isp['icode'] == "--" && $this->host['icode'] ) :
+					$this->isp['icode'] = $this->host['icode'];
+				endif;
+				if ( $this->isp['iname'] == "N/A" && $this->host['iname'] ) :
+					$this->isp['iname'] = $this->host['iname'];
+				endif;
+
+				if ( $this->isp['city'] == "N/A" && $this->host['city'] ) :
+					$this->isp['city'] = $this->host['city'];
+				endif;
+				if ( $this->isp['region'] == "N/A" && $this->host['region'] ) :
+					$this->isp['region'] = $this->host['region'];
+				endif;
+			endif;
 		endif;
+
+		$this->isp['region'] = $this->isp['region'] ? $this->isp['region'] : 'N/A';
 
 		return $this->isp;
 	}

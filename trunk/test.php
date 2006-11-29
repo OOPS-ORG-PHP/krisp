@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?
-# $Id: test.php,v 1.4 2006-09-14 13:08:43 oops Exp $
+# $Id: test.php,v 1.5 2006-11-29 09:33:56 oops Exp $
 
 require_once "krisp.php";
 
@@ -59,11 +59,12 @@ endif;
  *             netmask,
  *             network,
  *             broadcast,
- *             serv,       // ISP code
- *             org,        // ISP name
- *             gcode,      // GeoIP code
- *             gname,      // GeoIP name
- *             gcity,      // GeoIP city name
+ *             icode,      // ISP code
+ *             iname,      // ISP name
+ *             ccode,      // GeoIP code
+ *             cname,      // GeoIP name
+ *             city,       // GeoIP city name
+ *             region,     // GeoIP retion name
  *            );
  *
  */
