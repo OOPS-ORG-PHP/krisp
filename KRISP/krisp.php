@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.10 2006-12-01 08:04:47 oops Exp $
+// $Id: krisp.php,v 1.11 2006-12-01 09:39:34 oops Exp $
 
 class krisp_engine
 {
@@ -194,10 +194,7 @@ class krisp_engine
 				#endif;
 				#$this->isp['city'] .= $gir['city'];
 
-				$gvar = ( $this->isp['ccode'] == 'CA' || $this->isp['ccode'] == 'US' ) ?
-						'ISO' : 'FIPS';
-				# region => ${$gvar}[nation_code][region_code]
-				$this->isp['region'] = $this->{$gvar}[$this->isp['ccode']][$gir['region']];
+				$this->isp['region'] = $gir['region'] ? $gir['region'] : 'N/A';
 				$this->isp['city'] = $gir['city'];
 
 				if ( ! $this->isp['city'] ) :
@@ -248,6 +245,10 @@ class krisp_engine
 			endif;
 		endif;
 
+		$gvar = ( $this->isp['ccode'] == 'CA' || $this->isp['ccode'] == 'US' ) ?
+					'ISO' : 'FIPS';
+		# region => ${$gvar}[nation_code][region_code]
+		$this->isp['region'] = $this->{$gvar}[$this->isp['ccode']][$this->isp['region']];
 		$this->isp['region'] = $this->isp['region'] ? $this->isp['region'] : 'N/A';
 
 		return $this->isp;
