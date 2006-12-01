@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.9 2006-11-29 09:33:56 oops Exp $
+// $Id: krisp.php,v 1.10 2006-12-01 08:04:47 oops Exp $
 
 class krisp_engine
 {
@@ -129,6 +129,7 @@ class krisp_engine
 		$this->host['icode']  = $r[0]['isp_code'];
 		$this->host['iname']  = $r[0]['isp'];
 		$this->host['city']   = $r[0]['city'];
+		$this->host['region'] = $r[0]['region'];
 		$this->host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
 
 		if ( preg_match ('/([^,]+),(.*)/', $this->host['city'], $m) ) :
