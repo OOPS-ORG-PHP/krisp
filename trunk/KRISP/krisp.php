@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.11 2006-12-01 09:39:34 oops Exp $
+// $Id: krisp.php,v 1.12 2006-12-07 09:04:31 oops Exp $
 
 class krisp_engine
 {
@@ -112,6 +112,9 @@ class krisp_engine
 	}
 
 	function getHostInfo ($dbh, $host) {
+		if ( $dbh === FALSE ) :
+			return 1;
+		endif;
 		$_tmp = explode ('.', $host);
 		$cclass = "{$_tmp[0]}.{$_tmp[1]}.{$_tmp[2]}.0";
 		$net = bindec ($this->kr_ip2long ($cclass));
