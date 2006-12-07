@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.6 2006-11-29 09:33:56 oops Exp $
+// $Id: krisp.php,v 1.7 2006-12-07 09:04:05 oops Exp $
 
 require_once 'PEAR.php';
 
@@ -26,13 +26,13 @@ $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
  * PEAR's krisp:: interface. Defines the php extended krisp library
  *
  * @access public
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @package eSystem
  */
 class krisp extends PEAR
 {
-	var $version = "1.2.0";
-	var $uversion = "001002000";
+	var $version = "1.2.1";
+	var $uversion = "001002001";
 	var $dbtype = 'sqlite';
 	var $db;
 	var $err;
