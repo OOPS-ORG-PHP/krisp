@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.11 2009-10-21 17:27:38 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.12 2009-10-21 18:03:08 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
@@ -30,16 +30,65 @@ require_once 'KRISP/krisp.php';
  */
 class KRISP
 {
+	// {{{ properties
+	/**
+	 * KRSIP pear version
+	 * @accss	public
+	 * @const	string
+	 */
 	const VERSION = '1.2.1';
+	/**
+	 * KRSIP pear numeric style version
+	 * @accss	public
+	 * @const	string
+	 */
 	const UVERSION = '001002001';
-	static public $dbtype = 'sqlite';
-	static public $db;
+	/**
+	 * libkrisp backend database handle 
+	 * @accss	private
+	 * @var		resource
+	 */
+	static private $db;
+	/**
+	 * Error messages
+	 * @accss	public
+	 * @var		string
+	 */
 	static public $err;
-	static public $geoipset = 0;
+	/**
+	 * Whether suooprt geoip extension no don't
+	 * @accss	private
+	 * @var		integer
+	 */
+	static private $geoipset = 0;
+	/**
+	 * Whether check geoip database or don't
+	 * @accss	public
+	 * @var		string
+	 */
 	static public $geocity = 0;
+	/**
+	 * GeoIP.dat open flag.
+	 * Defaults 'GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
 	static public $geoip_type;
+	/**
+	 * GeoIPISP.dat open flag.
+	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
 	static public $geoisp_type;
+	/**
+	 * GeoIPCity.dat open flag.
+	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
 	static public $geocity_type;
+	// }}}
 
 	// {{{ (void) KRISP::__construct ($database = 'sqlite')
 	/**
@@ -52,7 +101,6 @@ class KRISP
 	function __construct ($database = 'sqlite') {
 		self::init ($database);
 
-		$this->dbtype       = &self::$dbtype;
 		$this->db           = &self::$db;
 		$this->err          = &self::$err;
 		$this->geoipset     = &self::$geoipset;
