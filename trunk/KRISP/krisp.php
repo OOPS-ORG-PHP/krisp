@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.14 2009-10-21 17:21:15 oops Exp $
+// $Id: krisp.php,v 1.15 2009-10-21 17:28:50 oops Exp $
 
 class KRISP_engine
 {
@@ -50,8 +50,8 @@ class KRISP_engine
 	);
 
 	function krisp_engine ($dbr) {
-		require_once 'krisp/db.php';
-		require 'krisp/georegion.php';
+		require_once 'KRISP/db.php';
+		require 'KRISP/georegion.php';
 		$this->db = new krisp_db ($dbr['type']);
 		$this->ISO = $ISO;
 		$this->FIPS = $FIPS;
