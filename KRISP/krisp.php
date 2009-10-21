@@ -16,16 +16,19 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.15 2009-10-21 17:28:50 oops Exp $
+// $Id: krisp.php,v 1.16 2009-10-21 18:21:29 oops Exp $
+
+require_once 'KRISP/db.php';
+require 'KRISP/georegion.php';
 
 class KRISP_engine
 {
-	var $db;
-	var $err;
-	var $geocity = 0;
-	var $ISO;
-	var $FIPS;
-	var $isp = array (
+	static public $db;
+	static public $err;
+	static public $geocity = 0;
+	static private $ISO;
+	static private $FIPS;
+	static public $isp = array (
 		'key'       => '',
 		'ip'        => '',
 		'netmask'   => '',
@@ -39,7 +42,7 @@ class KRISP_engine
 		'region'    => 'N/A'
 	);
 
-	var $host = array (
+	static public $host = array (
 		'ccode'     => '',
 		'cname'     => '',
 		'icode'     => '',
@@ -49,32 +52,36 @@ class KRISP_engine
 		'flag'      => 0
 	);
 
-	function krisp_engine ($dbr) {
-		require_once 'KRISP/db.php';
-		require 'KRISP/georegion.php';
-		$this->db = new krisp_db ($dbr['type']);
-		$this->ISO = $ISO;
-		$this->FIPS = $FIPS;
+	function __construct ($dbr) {
+		self::$db = new krisp_db ($dbr['type']);
+		self::$ISO = $GLOBALS['ISO'];
+		self::$FIPS = $GLOBALS['FIPS'];
+
+		$this->db      = &self::$db;
+		$this->err     = &self::$err;
+		$this->geocity = &self::$geocity;
+		$this->ISO     = &self::$ISO;
+		$this->FIPS    = &self::$FIPS;
+		$this->isp     = &self::$isp;
+		$this->host    = &self::$host;
 	}
 
 	function get_netmask ($dbh, $aclass) {
 		$sql = "SELECT subnet FROM netmask WHERE net = '$aclass'";
-		$r = $this->db->kr_dbSelect ($dbh, $sql);
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
 
-		if ( $r === FALSE ) :
-			$this->err = $this->db->kr_dbError ();
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
 			return NULL;
-		endif;
+		}
 
 		$_r = array ();
 
-		if ( ! is_array ($r) ) :
+		if ( ! is_array ($r) )
 			return NULL;
-		endif;
 
-		foreach ( $r as $v ) :
+		foreach ( $r as $v )
 			$_r[] = $v['subnet'];
-		endforeach;
 
 		return $_r;
 	}
@@ -85,28 +92,27 @@ class KRISP_engine
 
 	function getISPinfo ($dbh, $key) {
 		$sql = "SELECT * FROM isp WHERE longip = '$key'";
-		$r = $this->db->kr_dbSelect ($dbh, $sql);
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
 
-		if ( $r === FALSE ) :
-			$this->err = $this->db->kr_dbError ();
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
 			return 1;
-		endif;
+		}
 
-		$this->isp['key'] = $key;
-		$this->isp['netmask'] = $r[0]['netmask'];
-		$this->isp['network'] = $r[0]['network'];
-		$this->isp['broadcast'] = $r[0]['broadcast'];
-		$this->isp['iname'] = $r[0]['organization'] ? $r[0]['organization'] : 'N/A';
-		$this->isp['icode'] = $r[0]['servicename'] ? $r[0]['servicename'] : '--';
+		self::$isp['key'] = $key;
+		self::$isp['netmask'] = $r[0]['netmask'];
+		self::$isp['network'] = $r[0]['network'];
+		self::$isp['broadcast'] = $r[0]['broadcast'];
+		self::$isp['iname'] = $r[0]['organization'] ? $r[0]['organization'] : 'N/A';
+		self::$isp['icode'] = $r[0]['servicename'] ? $r[0]['servicename'] : '--';
 
-		if ( $this->isp['iname'] != 'N/A' && $this->isp['icode'] == '--' ) :
-			$this->isp['icode'] = $this->isp['iame'];
-		endif;
+		if ( self::$isp['iname'] != 'N/A' && self::$isp['icode'] == '--' )
+			self::$isp['icode'] = self::$isp['iame'];
 
-		if ( $this->isp['icode'] ) :
-			$this->isp['ccode'] = 'KR';
-			$this->isp['cname'] = 'Korea, Republic of';
-		endif;
+		if ( self::$isp['icode'] ) {
+			self::$isp['ccode'] = 'KR';
+			self::$isp['cname'] = 'Korea, Republic of';
+		}
 
 		return 0;
 	}
@@ -117,28 +123,28 @@ class KRISP_engine
 		endif;
 		$_tmp = explode ('.', $host);
 		$cclass = "{$_tmp[0]}.{$_tmp[1]}.{$_tmp[2]}.0";
-		$net = bindec ($this->kr_ip2long ($cclass));
+		$net = bindec (self::kr_ip2long ($cclass));
 
 		$sql = sprintf ('SELECT * FROM userdb WHERE longip = \'%s\'', $net);
-		$r = $this->db->kr_dbSelect ($dbh, $sql);
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
 
-		if ( $r === FALSE ) :
-			$this->err = $this->db->kr_dbError ();
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
 			return 1;
-		endif;
+		}
 
-		$this->host['ccode']  = $r[0]['country_code'];
-		$this->host['cname']  = $r[0]['country'];
-		$this->host['icode']  = $r[0]['isp_code'];
-		$this->host['iname']  = $r[0]['isp'];
-		$this->host['city']   = $r[0]['city'];
-		$this->host['region'] = $r[0]['region'];
-		$this->host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
+		self::$host['ccode']  = $r[0]['country_code'];
+		self::$host['cname']  = $r[0]['country'];
+		self::$host['icode']  = $r[0]['isp_code'];
+		self::$host['iname']  = $r[0]['isp'];
+		self::$host['city']   = $r[0]['city'];
+		self::$host['region'] = $r[0]['region'];
+		self::$host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
 
-		if ( preg_match ('/([^,]+),(.*)/', $this->host['city'], $m) ) :
-			$this->host['city'] = $m[1];
-			$this->host['retion'] = $m[2];
-		endif;
+		if ( preg_match ('/([^,]+),(.*)/', self::$host['city'], $m) ) {
+			self::$host['city'] = $m[1];
+			self::$host['retion'] = $m[2];
+		}
 
 		return 0;
 	}
@@ -146,119 +152,109 @@ class KRISP_engine
 	function search ($dbr, $host) {
 		$_tmp = explode ('.', $host);
 
-		if ( count ($_tmp) != 4 ) :
-			return $this->isp;
-		endif;
+		if ( count ($_tmp) != 4 )
+			return self::$isp;
 
-		$this->isp['ip'] = $host;
+		self::$isp['ip'] = $host;
 
 		$aclass = $_tmp[0];
-		$mask_r = $this->get_netmask ($dbr['handle'], $aclass);
+		$mask_r = self::get_netmask ($dbr['handle'], $aclass);
 
-		if ( is_array ($mask_r) ) :
-			$ip_c = $this->kr_ip2long ($this->isp['ip']);
+		if ( is_array ($mask_r) ) {
+			$ip_c = self::kr_ip2long (self::$isp['ip']);
 
-			foreach ( $mask_r as $v ) :
-				$mask = $this->kr_ip2long ($v);
+			foreach ( $mask_r as $v ) {
+				$mask = self::kr_ip2long ($v);
 				$mask_c = $mask & $ip_c;
 				$key = bindec ($mask_c);
 
-				if ( $this->getISPinfo ($dbr['handle'], $key) ) :
+				if ( self::getISPinfo ($dbr['handle'], $key) )
 					continue;
-				endif;
 
-				$compare = $this->kr_ip2long ($this->isp['netmask']);
+				$compare = self::kr_ip2long (self::$isp['netmask']);
 				$compare = bindec ($compare & $ip_c);
 
-				if ( $key == $compare ) :
+				if ( $key == $compare ) {
 					$r = 1;
 					break;
-				endif;
+				}
 
-			endforeach;
-		endif;
+			}
+		}
 
-		if ( ! trim ($this->isp['icode']) ) :
-			$this->isp['icode'] = '--';
-			$this->isp['iname'] = 'N/A';
-		endif;
+		if ( ! trim (self::$isp['icode']) ) {
+			self::$isp['icode'] = '--';
+			self::$isp['iname'] = 'N/A';
+		}
 
-		if ( extension_loaded ('geoip') ) :
-			if ( is_resource ($dbr['gi']['d']) ) :
+		if ( extension_loaded ('geoip') ) {
+			if ( is_resource ($dbr['gi']['d']) ) {
 				$gir = GeoIP_id_by_name ($dbr['gi']['d'], $host);
-				$this->isp['ccode'] = $gir['code'];
-				$this->isp['cname'] = $gir['name'];
-			endif;
+				self::$isp['ccode'] = $gir['code'];
+				self::$isp['cname'] = $gir['name'];
+			}
 			unset ($gir);
-			if ( is_resource ($dbr['gi']['c']) ) :
+			if ( is_resource ($dbr['gi']['c']) ) {
 				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
 				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
-				#	$this->isp['city'] = $gir['region'] . " ";
+				#	self::$isp['city'] = $gir['region'] . " ";
 				#endif;
-				#$this->isp['city'] .= $gir['city'];
+				#self::$isp['city'] .= $gir['city'];
 
-				$this->isp['region'] = $gir['region'] ? $gir['region'] : 'N/A';
-				$this->isp['city'] = $gir['city'];
+				self::$isp['region'] = $gir['region'] ? $gir['region'] : 'N/A';
+				self::$isp['city'] = $gir['city'];
 
-				if ( ! $this->isp['city'] ) :
-					$this->isp['city'] = "N/A";
-				endif;
-			endif;
-			if ( is_resource ($dbr['gi']['p']) ) :
+				if ( ! self::$isp['city'] )
+					self::$isp['city'] = "N/A";
+			}
+			if ( is_resource ($dbr['gi']['p']) ) {
 				$gisp = GeoIP_org_by_name ($dbr['gi']['p'], $host);
-				if ( $gisp && $this->isp['iname'] == 'N/A' ) :
-					$this->isp['icode'] = $gisp;
-					$this->isp['iname'] = $gisp;
-				endif;
-			endif;
-		endif;
+				if ( $gisp && self::$isp['iname'] == 'N/A' ) {
+					self::$isp['icode'] = $gisp;
+					self::$isp['iname'] = $gisp;
+				}
+			}
+		}
 
-		if ( ! $this->getHostInfo ($dbr['uhandle'], $this->isp['ip']) ) :
-			if ( $this->host['flag'] ) :
-				$this->isp['ccode'] = $this->host['ccode'] ? $this->host['ccode'] : $this->isp['ccode'];
-				$this->isp['cname'] = $this->host['cname'] ? $this->host['cname'] : $this->isp['cname'];
-				$this->isp['icode'] = $this->host['icode'] ? $this->host['icode'] : $this->isp['icode'];
-				$this->isp['iname'] = $this->host['iname'] ? $this->host['iname'] : $this->isp['iname'];
-				$this->isp['city'] = $this->host['city'] ? $this->host['city'] : $this->isp['city'];
-				$this->isp['region'] = $this->host['region'] ? $this->host['region'] : $this->isp['region'];
-				if ( $this->host['city'] && ! $this->host['region'] ) :
-					$this->isp['region'] = 'N/A';
-				endif;
-			else :
-				if ( $this->isp['ccode'] == "--" && $this->host['ccode'] ) :
-					$this->isp['ccode'] = $this->host['ccode'];
-				endif;
-				if ( $this->isp['cname'] == "N/A" && $this->host['cname'] ) :
-					$this->isp['cname'] = $this->host['cname'];
-				endif;
+		if ( ! self::getHostInfo ($dbr['uhandle'], self::$isp['ip']) ) {
+			if ( self::$host['flag'] ) {
+				self::$isp['ccode'] = self::$host['ccode'] ? self::$host['ccode'] : self::$isp['ccode'];
+				self::$isp['cname'] = self::$host['cname'] ? self::$host['cname'] : self::$isp['cname'];
+				self::$isp['icode'] = self::$host['icode'] ? self::$host['icode'] : self::$isp['icode'];
+				self::$isp['iname'] = self::$host['iname'] ? self::$host['iname'] : self::$isp['iname'];
+				self::$isp['city'] = self::$host['city'] ? self::$host['city'] : self::$isp['city'];
+				self::$isp['region'] = self::$host['region'] ? self::$host['region'] : self::$isp['region'];
+				if ( self::$host['city'] && ! self::$host['region'] )
+					self::$isp['region'] = 'N/A';
+			} else {
+				if ( self::$isp['ccode'] == "--" && self::$host['ccode'] )
+					self::$isp['ccode'] = self::$host['ccode'];
+				if ( self::$isp['cname'] == "N/A" && self::$host['cname'] )
+					self::$isp['cname'] = self::$host['cname'];
 
-				if ( $this->isp['icode'] == "--" && $this->host['icode'] ) :
-					$this->isp['icode'] = $this->host['icode'];
-				endif;
-				if ( $this->isp['iname'] == "N/A" && $this->host['iname'] ) :
-					$this->isp['iname'] = $this->host['iname'];
-				endif;
+				if ( self::$isp['icode'] == "--" && self::$host['icode'] )
+					self::$isp['icode'] = self::$host['icode'];
+				if ( self::$isp['iname'] == "N/A" && self::$host['iname'] )
+					self::$isp['iname'] = self::$host['iname'];
 
-				if ( $this->isp['city'] == "N/A" && $this->host['city'] ) :
-					$this->isp['city'] = $this->host['city'];
-				endif;
-				if ( $this->isp['region'] == "N/A" && $this->host['region'] ) :
-					$this->isp['region'] = $this->host['region'];
-				endif;
-			endif;
-		endif;
+				if ( self::$isp['city'] == "N/A" && self::$host['city'] )
+					self::$isp['city'] = self::$host['city'];
+				if ( self::$isp['region'] == "N/A" && self::$host['region'] )
+					self::$isp['region'] = self::$host['region'];
+			}
+		}
 
-		$gvar = ( $this->isp['ccode'] == 'CA' || $this->isp['ccode'] == 'US' ) ?
+		$gvar = ( self::$isp['ccode'] == 'CA' || self::$isp['ccode'] == 'US' ) ?
 					'ISO' : 'FIPS';
 		# region => ${$gvar}[nation_code][region_code]
-		$this->isp['region'] = $this->{$gvar}[$this->isp['ccode']][$this->isp['region']];
-		$this->isp['region'] = $this->isp['region'] ? $this->isp['region'] : 'N/A';
+		self::$isp['region'] = self::${$gvar}[self::$isp['ccode']][self::$isp['region']];
+		self::$isp['region'] = self::$isp['region'] ? self::$isp['region'] : 'N/A';
 
-		return $this->isp;
+		return self::$isp;
 	}
 
 	function krisp_error () {
-		return $this->err;
+		return self::$err;
 	}
 }
 
