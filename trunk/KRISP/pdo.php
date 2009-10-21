@@ -16,11 +16,15 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: pdo.php,v 1.5 2009-10-21 17:21:16 oops Exp $
+// $Id: pdo.php,v 1.6 2009-10-21 18:21:29 oops Exp $
 
 class KRISP_pdo
 {
 	static public $err;
+
+	function __construct () {
+		$this->err = &self::$err;
+	}
 
 	function sql_open ($database) {
 		try {
