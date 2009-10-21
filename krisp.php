@@ -14,15 +14,15 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.10 2009-10-21 17:25:16 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.11 2009-10-21 17:27:38 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
 
 $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
 
-require_once "krisp/db.php";
-require_once 'krisp/krisp.php';
+require_once "KRISP/db.php";
+require_once 'KRISP/krisp.php';
 
 /**
  * Base class for KRISP API
