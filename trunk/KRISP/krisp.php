@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.16 2009-10-21 18:21:29 oops Exp $
+// $Id: krisp.php,v 1.17 2009-10-21 19:22:30 oops Exp $
 
 require_once 'KRISP/db.php';
 require 'KRISP/georegion.php';
@@ -25,9 +25,7 @@ class KRISP_engine
 {
 	static public $db;
 	static public $err;
-	static public $geocity = 0;
-	static private $ISO;
-	static private $FIPS;
+	static public $utf8 = false;
 	static public $isp = array (
 		'key'       => '',
 		'ip'        => '',
@@ -54,16 +52,35 @@ class KRISP_engine
 
 	function __construct ($dbr) {
 		self::$db = new krisp_db ($dbr['type']);
-		self::$ISO = $GLOBALS['ISO'];
-		self::$FIPS = $GLOBALS['FIPS'];
+		self::$isp = array (
+			'key'       => '',
+			'ip'        => '',
+			'netmask'   => '',
+			'network'   => '',
+			'broadcast' => '',
+			'icode'     => '--',
+			'iname'     => 'N/A',
+			'ccode'     => '--',
+			'cname'     => 'N/A',
+			'city'      => 'N/A',
+			'region'    => 'N/A'
+		);
 
-		$this->db      = &self::$db;
-		$this->err     = &self::$err;
-		$this->geocity = &self::$geocity;
-		$this->ISO     = &self::$ISO;
-		$this->FIPS    = &self::$FIPS;
-		$this->isp     = &self::$isp;
-		$this->host    = &self::$host;
+		self::$host = array (
+			'ccode'     => '',
+			'cname'     => '',
+			'icode'     => '',
+			'iname'     => '',
+			'city'      => '',
+			'region'    => '',
+			'flag'      => 0
+		);
+
+		$this->db   = &self::$db;
+		$this->err  = &self::$err;
+		$this->isp  = &self::$isp;
+		$this->host = &self::$host;
+		$this->utf8 = &self::$utf8;
 	}
 
 	function get_netmask ($dbh, $aclass) {
@@ -244,11 +261,23 @@ class KRISP_engine
 			}
 		}
 
+		if ( self::$isp['ccode'] == 'KR' && isset ($GLOBALS['FIPS_K']['cityMap_en'][self::$isp['city']]) )
+			self::$isp['city'] = $GLOBALS['FIPS_K']['cityMap_en'][self::$isp['city']];
+
 		$gvar = ( self::$isp['ccode'] == 'CA' || self::$isp['ccode'] == 'US' ) ?
 					'ISO' : 'FIPS';
 		# region => ${$gvar}[nation_code][region_code]
-		self::$isp['region'] = self::${$gvar}[self::$isp['ccode']][self::$isp['region']];
+		if ( self::$isp['ccode'] == 'KR' )
+			self::$isp['region'] = $GLOBALS['FIPS_K']['long'][self::$isp['region']];
+		else
+			self::$isp['region'] = $GLOBALS[$gvar][self::$isp['ccode']][self::$isp['region']];
 		self::$isp['region'] = self::$isp['region'] ? self::$isp['region'] : 'N/A';
+
+		if ( self::$isp['ccode'] == 'KR' && self::$utf8 ) {
+			$target = array ('iname', 'city', 'region');
+			foreach ( $target as $var )
+				self::$isp[$var] = iconv ('euc-kr', 'utf-8//IGNORE', self::$isp[$var]);
+		}
 
 		return self::$isp;
 	}

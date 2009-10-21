@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?
-# $Id: test.php,v 1.6 2009-10-21 17:13:40 oops Exp $
+# $Id: test.php,v 1.7 2009-10-21 19:22:30 oops Exp $
 
 require_once "krisp.php";
 
@@ -78,10 +78,10 @@ print_r ($r);
  */
 $kr->kr_close ($c);
 
-
 echo "*************** Self   mode test ***************\n";
 
 KRISP::init ('sqlite3');
+#KRISP::$geocity = false;
 $c = KRISP::kr_open ('/usr/share/krisp/krisp.dat');
 if ( $c === false ) {
 	echo "ERROR: " . KRISP::kr_error () . "\n";

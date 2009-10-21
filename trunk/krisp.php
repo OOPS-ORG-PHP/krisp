@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.12 2009-10-21 18:03:08 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.13 2009-10-21 19:22:30 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
@@ -66,7 +66,7 @@ class KRISP
 	 * @accss	public
 	 * @var		string
 	 */
-	static public $geocity = 0;
+	static public $geocity = false;
 	/**
 	 * GeoIP.dat open flag.
 	 * Defaults 'GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE'
@@ -88,6 +88,12 @@ class KRISP
 	 * @var		and operation (integer)
 	 */
 	static public $geocity_type;
+	/**
+	 * UTF-8 output
+	 * @access	public
+	 * @var		boolean
+	 */
+	static public $utf8 = false;
 	// }}}
 
 	// {{{ (void) KRISP::__construct ($database = 'sqlite')
@@ -108,10 +114,14 @@ class KRISP
 		$this->geoip_type   = &self::$geoip_type;
 		$this->geoisp_type  = &self::$geoisp_type;
 		$this->geocity_type = &self::$geocity_type;
+		$this->utf8         = &self::$utf8;
+
+		if ( preg_match ('/utf[-]?8$/i', $_ENV['LANG']) )
+			self::$utf8 = true;
 	}
 	// }}}
 
-	// {{{ (void) KRISP::krisp ($database = 'sqlite')
+	// {{{ (void) KRISP::init ($database = 'sqlite')
 	/**
 	 * Initialize KRISP class
 	 *
@@ -205,7 +215,7 @@ class KRISP
 		if ( self::$geoipset ) {
 			$gi['d'] = GeoIP_open (self::$geoip_type);
 			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, self::$geoisp_type);
-			$gi['c'] = (geocity) ? GeoIP_open (GEOIP_CITY_EDITION_REV0, self::$geocity_type) : null;
+			$gi['c'] = self::$geocity ? GeoIP_open (GEOIP_CITY_EDITION_REV0, self::$geocity_type) : null;
 		}
 
 		$r = array ('handle' => $c, 'uhandle' => $u, 'type' => self::$db->type, 'gi' => $gi);
@@ -226,8 +236,7 @@ class KRISP
 	 */
 	function kr_search ($dbr, $host) {
 		$s = new KRISP_engine ($dbr);
-
-		$s->geocity = &self::$geocity;
+		$s->utf8 = self::$utf8;
 
 		$host = gethostbyname ($host);
 		$r = $s->search ($dbr, $host);
