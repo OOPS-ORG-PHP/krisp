@@ -1,5 +1,10 @@
 #!/bin/sh
-# $Id: pack.sh,v 1.1 2006-09-14 17:29:09 oops Exp $
+# $Id: pack.sh,v 1.2 2009-10-21 17:42:35 oops Exp $
+
+#if [ "$1" = "doc" ]; then
+#	phpdoc -s on -p on -o HTML:Smarty:PHP -f ePrint.php -t docs -ti "ePrint pear package Reference"
+#	exit $?
+#fi
 
 cp -af package.xml.tmpl package.xml
 list=$(grep "md5sum" ./package.xml | sed 's/.*"@\|@".*//g')
@@ -10,6 +15,10 @@ do
 	perl -pi -e "s!\@${i}\@!${md5s}!g" ./package.xml
 done
 
-if [ -z "$1" ]; then
-	pear package
-fi
+curdate=$(date +'%Y-%m-%d')
+curtime=$(date +'%H:%M:%S')
+
+perl -pi -e "s!\@curdate\@!${curdate}!g" ./package.xml
+perl -pi -e "s!\@curtime\@!${curtime}!g" ./package.xml
+
+[ -z "$1" ] && pear package

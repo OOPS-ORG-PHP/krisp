@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-	<!-- $Id: package.xml.tmpl,v 1.7 2009-07-07 12:47:19 oops Exp $ -->
+	<!-- $Id: package.xml.tmpl,v 1.8 2009-10-21 17:42:35 oops Exp $ -->
 	<name>krisp</name>
 	<channel>pear.oops.org</channel>
 	<summary>php pure code for search krisp database</summary>
@@ -8,8 +8,8 @@
 	</description>
 	<lead>
 		<name>JoungKyun.Kim</name>
-		<user>oops</user>
-		<email>http://www.oops.org</email>
+		<user>joungkyun</user>
+		<email>joungkyun@gmail.com</email>
 		<active>yes</active>
 	</lead>
 	<date>@curdate@</date>
@@ -19,21 +19,23 @@
 		<api>1.2.0</api>
 	</version>
 	<stability>
-		<release>devel</release>
-		<api>devel</api>
+		<release>stable</release>
+		<api>stable</api>
 	</stability>
 	<license>PHP/LGPL</license>
-	<notes>- fixed db error when don&apos;t exists userdb
-
+	<notes>- support over class of php5
+- changed subdirectory name to KRISP
+- changed class name to upper case (from krisp to KRSIP)
+- fixed db error when don&apos;t exists userdb
 	</notes>
 	<contents>
 		<dir name="/">
-			<dir name="krisp">
-				<file md5sum="@krisp/db.php@" name="db.php" role="php" />
-				<file md5sum="@krisp/georegion.php@" name="georegion.php" role="php" />
-				<file md5sum="@krisp/krisp.php@" name="krisp.php" role="php" />
-				<file md5sum="@krisp/pdo.php@" name="pdo.php" role="php" />
-				<file md5sum="@krisp/sqlite.php@" name="sqlite.php" role="php" />
+			<dir name="KRISP">
+				<file role="php" md5sum="@KRISP/db.php@"        name="db.php" />
+				<file role="php" md5sum="@KRISP/georegion.php@" name="georegion.php" />
+				<file role="php" md5sum="@KRISP/krisp.php@"     name="krisp.php"     />
+				<file role="php" md5sum="@KRISP/pdo.php@"       name="pdo.php" />
+				<file role="php" md5sum="@KRISP/sqlite.php@"    name="sqlite.php" />
 			</dir> <!-- //krisp -->
 			<file md5sum="@krisp.php@" name="krisp.php" role="php" />
 		</dir> <!-- / -->
@@ -62,8 +64,7 @@
 			<date>2006-06-20</date>
 			<license>PHP/LGPL</license>
 			<notes>- first release
-
-			</notes>
+</notes>
 		</release>
 		<release>
 			<version>
@@ -77,11 +78,10 @@
 			<date>2006-09-07</date>
 			<license>PHP/LGPL</license>
 			<notes>- support GeoIPCITY (if you have)
-				- support GeoIPISP (if you have)
-				- support GeoIPORG (if you have)
-				- required over mod_geoip 1.1.0
-
-			</notes>
+- support GeoIPISP (if you have)
+- support GeoIPORG (if you have)
+- required over mod_geoip 1.1.0
+</notes>
 		</release>
 		<release>
 			<version>
@@ -95,8 +95,7 @@
 			<date>2006-09-09</date>
 			<license uri="http://www.example.com">PHP/LGPL</license>
 			<notes>-change memory type
-
-			</notes>
+</notes>
 		</release>
 		<release>
 			<version>
@@ -110,11 +109,10 @@
 			<date>2006-09-15</date>
 			<license uri="http://www.example.com">PHP/LGPL</license>
 			<notes>- add goeip city database search on/off function
-				- add GeoIP database open type
-				- add geoip region information
-				- fixed pear package format
-
-			</notes>
+- add GeoIP database open type
+- add geoip region information
+- fixed pear package format
+</notes>
 		</release>
 		<release>
 			<version>
@@ -128,8 +126,7 @@
 			<date>2006-09-16</date>
 			<license uri="http://www.example.com">PHP/LGPL</license>
 			<notes>- fixed missing operation of retion information
-
-			</notes>
+</notes>
 		</release>
 		<release>
 			<version>
@@ -143,9 +140,8 @@
 			<date>2006-12-01</date>
 			<license uri="http://www.example.com">PHP/LGPL</license>
 			<notes>- support over libkrisp 2.1.0
-				- support userdb
-
-			</notes>
+- support userdb
+</notes>
 		</release>
 		<release>
 			<version>
@@ -153,14 +149,16 @@
 				<api>1.2.0</api>
 			</version>
 			<stability>
-				<release>devel</release>
-				<api>devel</api>
+				<release>stable</release>
+				<api>stable</api>
 			</stability>
-			<date>2006-12-07</date>
+			<date>@curdate@</date>
 			<license uri="http://www.example.com">PHP/LGPL</license>
-			<notes>- fixed db error when don&apos;t exists userdb
-
-			</notes>
+			<notes>- support over class of php5
+- changed subdirectory name to KRISP
+- changed class name to upper case (from krisp to KRSIP)
+- fixed db error when don&apos;t exists userdb
+</notes>
 		</release>
 	</changelog>
 </package>
