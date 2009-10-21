@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.9 2009-10-21 17:13:40 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.10 2009-10-21 17:25:16 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
@@ -73,7 +73,7 @@ class KRISP
 	 *                  Support type of database are sqlite3, sqlite, mysql
 	 */
 	function init ($database = 'sqlite') {
-		self::$db = new krisp_db ($database);
+		self::$db = new KRISP_db ($database);
 
 		if ( extension_loaded ('geoip') )
 			self::$geoipset = 1;
@@ -177,7 +177,7 @@ class KRISP
 	 * @param	string		search host or ip address
 	 */
 	function kr_search ($dbr, $host) {
-		$s = new krisp_engine ($dbr);
+		$s = new KRISP_engine ($dbr);
 
 		$s->geocity = &self::$geocity;
 
