@@ -16,68 +16,72 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: db.php,v 1.3 2006-11-29 09:33:56 oops Exp $
+// $Id: db.php,v 1.4 2009-10-21 17:13:40 oops Exp $
 
 class krisp_db
 {
-	var $type;
-	var $db;
-	var $err;
-	var $otype;
+	static public $type;
+	static public $db;
+	static public $err;
+	static public $otype;
 
-	var $dbn = array (
+	static private $dbn = array (
 		'sqlite'  => 'sqlite2',
 		'sqlite3' => 'sqlite',
 		'mysql'   => 'mysql'
 	);
 
-	function krisp_db ($t) {
-		$this->type = $t;
-		$this->otype = ( $t == 'sqlite' ) ? "krisp_{$t}" : 'krisp_pdo';
-		$openfile = ($this->otype == 'krisp_pdo') ? 'pdo' : $t;
+	function __construct ($t) {
+		self::$type = $t;
+		self::$otype = ( $t == 'sqlite' ) ? "krisp_{$t}" : 'krisp_pdo';
+		$openfile = (self::$otype == 'krisp_pdo') ? 'pdo' : $t;
 
 		require_once $openfile . ".php";
-		$this->db = new $this->otype;
+		self::$db = new self::$otype;
+
+		$this->type  = &self::$type;
+		$this->db    = &self::$db;
+		$this->err   = &self::$err;
+		$this->otype = &self::$otype;
 	}
 
 	function kr_dbConnect ($database) {
-		if ( ! trim ($database) ) :
-			$this->err = "nothing database name";
-			return FALSE;
-		endif;
+		if ( ! trim ($database) ) {
+			self::$err = "nothing database name";
+			return false;
+		}
 
-		switch ($this->type) :
+		switch (self::$type) {
 			case 'sqlite' :
 				break;
 			default :
-				$database = $this->dbn[$this->type] . ':' . $database;
-		endswitch;
+				$database = self::$dbn[$this->type] . ':' . $database;
+		}
 
-		$c = $this->db->sql_open ($database);
+		$c = self::$db->sql_open ($database);
 
-		if ( $c === FALSE ) :
-			$this->err = $this->db->sql_error ();
-		endif;
+		if ( $c === false )
+			self::$err = self::$db->sql_error ();
 
 		return $c;
 	}
 
 	function kr_dbSelect ($dbh, $sql) {
-		$r = $this->db->sql_select ($dbh, $sql);
-		if ( $r === FALSE ) :
-			$this->err = $this->db->sql_error ();
-			return FALSE;
-		endif;
+		$r = self::$db->sql_select ($dbh, $sql);
+		if ( $r === false ) {
+			self::$err = self::$db->sql_error ();
+			return false;
+		}
 
 		return $r;
 	}
 
 	function kr_dbClose ($dbh) {
-		$this->db->sql_close ($dbh);
+		self::$db->sql_close ($dbh);
 	}
 
 	function kr_dbError () {
-		return $this->err;
+		return self::$err;
 	}
 }
 

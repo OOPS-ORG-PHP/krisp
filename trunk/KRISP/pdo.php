@@ -16,19 +16,19 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: pdo.php,v 1.2 2006-09-14 17:29:09 oops Exp $
+// $Id: pdo.php,v 1.3 2009-10-21 17:13:40 oops Exp $
 
 class krisp_pdo
 {
-	var $err;
+	static public $err;
 
 	function sql_open ($database) {
 		try {
 			$db = new PDO ($database);
 			return $db;
 		} catch (PDOException $e) {
-			$this->err = $e->getMessage ();
-			return FALSE;
+			self::$err = $e->getMessage ();
+			return false;
 		}
 
 		return $db;
@@ -39,12 +39,12 @@ class krisp_pdo
 			$r = array ();
 			$ret = $dbh->query ($sql);
 
-			foreach ( $ret as $row ) :
+			foreach ( $ret as $row )
 				array_push ($r, $row);
-			endforeach;
+
 		} catch (PDOException $e) {
-			$this->err = $e->getMessage ();
-			return FALSE;
+			self::$err = $e->getMessage ();
+			return false;
 		}
 
 		return $r;
@@ -55,7 +55,7 @@ class krisp_pdo
 	}
 
 	function sql_error () {
-		return $this->err;
+		return self::$err;
 	}
 }
 

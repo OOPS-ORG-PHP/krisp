@@ -16,23 +16,27 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: sqlite.php,v 1.2 2006-09-14 17:29:09 oops Exp $
+// $Id: sqlite.php,v 1.3 2009-10-21 17:13:40 oops Exp $
 
 class krisp_sqlite
 {
-	var $err = '';
+	static public $err = '';
+
+	function __construct () {
+		$this->err = &self::$err;
+	}
 
 	function sql_error () {
-		return $this->err;
+		return self::$err;
 	}
 
 	function sql_open ($database) {
-		$c = @sqlite_open ($database, 0644);
+		$c = sqlite_open ($database, 0644);
 
-		if ( ! is_resource ($c) ) :
-			$this->err = "Connect failed to $database";
-			return FALSE;
-		endif;
+		if ( ! is_resource ($c) ) {
+			self::$err = "Connect failed to $database";
+			return false;
+		}
 
 		return $c;
 	}
@@ -40,19 +44,18 @@ class krisp_sqlite
 	function sql_query ($dbh, $sql) {
 		$r = sqlite_query ($db, $sql);
 
-		if ( ! is_resource ($r) ) :
-			$this->err = _sql_error ($dbh);
-			return FALSE;
-		endif;
+		if ( ! is_resource ($r) ) {
+			self::$err = _sql_error ($dbh);
+			return false;
+		}
 
 		return $r;
 	}
 
 	function sql_num_rows ($v) {
 		$r = 0;
-		if ( is_resource ($v) ) :
+		if ( is_resource ($v) )
 			$r = sqlite_num_rows ($v);
-		endif;
 
 		return $r;
 	}
@@ -60,10 +63,10 @@ class krisp_sqlite
 	function sql_fetch_array ($v) {
 		$r = sqlite_fetch_array ($v, SQLITE_ASSOC);
 
-		if ( ! is_array ($r) ) :
-			$this->err = _sql_error ($dbh);
-			return NULL;
-		endif;
+		if ( ! is_array ($r) ) {
+			self::$err = _sql_error ($dbh);
+			return null;
+		}
 
 		return $r;
 	}
@@ -71,21 +74,19 @@ class krisp_sqlite
 	function sql_select ($dbh, $sql) {
 		$r = $this->sql_query ($dbh, $sql);
 
-		if ( $r === FALSE )
+		if ( $r === false )
 			return $r;
 
 		$ret = array ();
-		while ( is_array ($a = $this->sql_fetch ($r, SQLITE_ASSOC)) ) :
+		while ( is_array ($a = $this->sql_fetch ($r, SQLITE_ASSOC)) )
 			array_push ($ret, $a);
-		endwhile;
 
 		return $ret;
 	}
 
 	function sql_close ($dbh) {
-		if ( is_resource ($dbh) ) :
+		if ( is_resource ($dbh) )
 			sqlite_close ($dbh);
-		endif;
 	}
 
 	function _sql_error ($dbh) {

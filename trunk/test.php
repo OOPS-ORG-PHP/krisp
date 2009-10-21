@@ -1,8 +1,10 @@
 #!/usr/bin/php
 <?
-# $Id: test.php,v 1.5 2006-11-29 09:33:56 oops Exp $
+# $Id: test.php,v 1.6 2009-10-21 17:13:40 oops Exp $
 
 require_once "krisp.php";
+
+echo "*************** Object mode test ***************\n";
 
 /*
  * INIT krisp pear
@@ -42,10 +44,10 @@ $c = $kr->kr_open ("/usr/share/krisp/krisp.dat");
  *
  * string krisp::kr_error (void)
  */
-if ( $c === FALSE ) :
+if ( $c === FALSE ) {
 	echo "ERROR: " . $kr->kr_error () . "\n";
 	exit (1);
-endif;
+}
 
 /*
  * search krisp database
@@ -75,4 +77,18 @@ print_r ($r);
  * close krisp database
  */
 $kr->kr_close ($c);
+
+
+echo "*************** Self   mode test ***************\n";
+
+KRISP::init ('sqlite3');
+$c = KRISP::kr_open ('/usr/share/krisp/krisp.dat');
+if ( $c === false ) {
+	echo "ERROR: " . KRISP::kr_error () . "\n";
+	exit (1);
+}
+$r = KRISP::kr_search ($c, $argv[1]);
+print_r ($r);
+KRISP::kr_close ($c);
+
 ?>

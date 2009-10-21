@@ -14,60 +14,83 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.8 2009-10-21 16:31:33 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.9 2009-10-21 17:13:40 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
 
 $_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
 
+require_once "krisp/db.php";
+require_once 'krisp/krisp.php';
+
 /**
  * Base class for KRISP API
  * @package		krisp
  */
-class krisp
+class KRISP
 {
-	var $version = "1.2.1";
-	var $uversion = "001002001";
-	var $dbtype = 'sqlite';
-	var $db;
-	var $err;
-	var $geoipset = 0;
-	var $geocity = 0;
-	var $geoip_type;
-	var $geoisp_type;
-	var $geocity_type;
+	const VERSION = '1.2.1';
+	const UVERSION = '001002001';
+	static public $dbtype = 'sqlite';
+	static public $db;
+	static public $err;
+	static public $geoipset = 0;
+	static public $geocity = 0;
+	static public $geoip_type;
+	static public $geoisp_type;
+	static public $geocity_type;
 
-	// {{{ (void) krisp::krisp ($database = 'sqlite')
+	// {{{ (void) KRISP::__construct ($database = 'sqlite')
+	/**
+	 *
+	 * @access	public
+	 * @return	void
+	 * @param	string	(optional) Defaults to sqlite. Set type of krisp database.
+	 *                  Support type of database are sqlite3, sqlite, mysql
+	 */
+	function __construct ($database = 'sqlite') {
+		self::init ($database);
+
+		$this->dbtype       = &self::$dbtype;
+		$this->db           = &self::$db;
+		$this->err          = &self::$err;
+		$this->geoipset     = &self::$geoipset;
+		$this->geocity      = &self::$geocity;
+		$this->geoip_type   = &self::$geoip_type;
+		$this->geoisp_type  = &self::$geoisp_type;
+		$this->geocity_type = &self::$geocity_type;
+	}
+	// }}}
+
+	// {{{ (void) KRISP::krisp ($database = 'sqlite')
 	/**
 	 * Initialize KRISP class
 	 *
 	 * @access	public
 	 * @return	void
 	 * @param	string	(optional) Defaults to sqlite. Set type of krisp database.
-	 *                  Support type of database are sqlite2, sqlite, mysql
+	 *                  Support type of database are sqlite3, sqlite, mysql
 	 */
-	function krisp ($database = 'sqlite') {
-		require_once "krisp/db.php";
-		$this->db = new krisp_db ($database);
+	function init ($database = 'sqlite') {
+		self::$db = new krisp_db ($database);
 
-		if ( extension_loaded ('geoip') ) :
-			$this->geoipset = 1;
-		else :
-			if ( @ dl ('geoip.so') ) :
-				$this->geoipset = 1;
-			endif;
-		endif;
+		if ( extension_loaded ('geoip') )
+			self::$geoipset = 1;
+		else {
+			if ( @ dl ('geoip.so') )
+				self::$geoipset = 1;
+		}
 
-		if ( $geoipset ) :
-			$this->geoip_type   = '';
-			$this->geoisp_type  = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
-			$this->geocity_type = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
-		endif;
+		if ( self::$geoipset ) {
+			self::$geoip_type   = '';
+			self::$geoisp_type  = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+			self::$geocity_type = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+		}
 	}
 	// }}}
 
-	// {{{ (string) krisp::krisp_version (void)
+	// {{{ (string) KRISP::krisp_version (void)
 	/**
 	 * Returns pear_krisp version
 	 *
@@ -76,11 +99,11 @@ class krisp
 	 * @param	void
 	 */
 	function krisp_version () {
-		return $this->version;
+		return self::VERSION;
 	}
 	// }}}
 
-	// {{{ (string) krisp::krisp_uversion (void)
+	// {{{ (string) KRISP::krisp_uversion (void)
 	/**
 	 * Returns pears version that has numeric strype
 	 *
@@ -89,75 +112,74 @@ class krisp
 	 * @param	void
 	 */
 	function krisp_uversion () {
-		return $this->uversion;
+		return self::UVERSION;
 	}
 	// }}}
 
-	// {{{ priavte (resource) krisp::kr_userdb ($f)
+	// {{{ priavte (resource) KRISP::kr_userdb ($f)
 	private function kr_userdb ($f) {
 		$u = '';
 
-		if ( file_exists ($f . "-userdb") ) :
+		if ( file_exists ($f . "-userdb") )
 			$u = $f . "-userdb";
-		else : 
+		else {
 			preg_match ('/(.*)\.dat/', $f, $m);
 			$u = $m[1] . "-userdb.dat";
 
 			$u = file_exists ($u) ? $u : '';
-		endif; 
+		}
         
 		return $u;
 	}
 	// }}}
 
-	// {{{ (resource) krisp::kr_open ($database)
+	// {{{ (resource) KRISP::kr_open ($database)
 	/**
 	 * Open the krisp database and return database handler
 	 *
 	 * @access	public
 	 * @return	resource|false If failed to open database, returns false
-	 * @param	string	Database name. If database type is set sqlite or sqlite2, set
+	 * @param	string	Database name. If database type is set sqlite or sqlite3, set
 	 *                  sqlite database file path.
 	 */
 	function kr_open ($database) {
-		$c = $this->db->kr_dbConnect ($database);
-		if ( $c === FALSE ) :
-			$this->err = $this->db->kr_dbError ();
-			return FALSE;
-		endif;
+		$c = self::$db->kr_dbConnect ($database);
+		if ( $c === false ) {
+			self::$err = self::$db->kr_dbError ();
+			return false;
+		}
 
 		/* connect user database */
-		$u = $this->db->kr_dbConnect ($this->kr_userdb ($database));
+		$u = self::$db->kr_dbConnect (self::kr_userdb ($database));
 
-		$gi = NULL;
+		$gi = null;
 
-		if ( $this->geoipset ) :
-			$gi['d'] = GeoIP_open ($this->goeip_type);
-			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, $this->geoisp_type);
-			$gi['c'] = (geocity) ? GeoIP_open (GEOIP_CITY_EDITION_REV0, $this->geocity_type) : NULL;
-		endif;
+		if ( self::$geoipset ) {
+			$gi['d'] = GeoIP_open (self::$geoip_type);
+			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, self::$geoisp_type);
+			$gi['c'] = (geocity) ? GeoIP_open (GEOIP_CITY_EDITION_REV0, self::$geocity_type) : null;
+		}
 
-		$r = array ('handle' => $c, 'uhandle' => $u, 'type' => $this->db->type, 'gi' => $gi);
+		$r = array ('handle' => $c, 'uhandle' => $u, 'type' => self::$db->type, 'gi' => $gi);
 		
 		return $r;
 	}
 	// }}}
 
-	// {{{ (array) krisp::kr_search ($dbr, $host)
+	// {{{ (array) KRISP::kr_search ($dbr, $host)
 	/**
 	 * Search given hostname or ip address on krisp database and returns
 	 * information of given hostname of ip address.
 	 *
 	 * @access	public
 	 * @return	array
-	 * @param	resource	database handle by krisp::kr_open
+	 * @param	resource	database handle by KRISP::kr_open
 	 * @param	string		search host or ip address
 	 */
 	function kr_search ($dbr, $host) {
-		require_once 'krisp/krisp.php';
 		$s = new krisp_engine ($dbr);
 
-		$s->geocity = $this->geocity;
+		$s->geocity = &self::$geocity;
 
 		$host = gethostbyname ($host);
 		$r = $s->search ($dbr, $host);
@@ -166,30 +188,27 @@ class krisp
 	}
 	// }}}
 
-	// {{{ (void) krisp::kr_close ($dbr)
+	// {{{ (void) KRISP::kr_close ($dbr)
 	/**
-	 * Close database handle that opend by krisp::kr_open
+	 * Close database handle that opend by KRISP::kr_open
 	 *
 	 * @access	public
 	 * @return	void
-	 * @param	resource database handle by krisp::kr_open
+	 * @param	resource database handle by KRISP::kr_open
 	 */
 	function kr_close ($dbr) {
-		$this->db->kr_dbClose ($dbr['handle']);
-		$this->db->kr_dbClose ($dbr['uhandle']);
-		if ( is_resource ($dbr['gi']['d']) ) :
+		self::$db->kr_dbClose ($dbr['handle']);
+		self::$db->kr_dbClose ($dbr['uhandle']);
+		if ( is_resource ($dbr['gi']['d']) )
 			GeoIP_close ($dbr['gi']['d']);
-		endif;
-		if ( is_resource ($dbr['gi']['c']) ) :
+		if ( is_resource ($dbr['gi']['c']) )
 			GeoIP_close ($dbr['gi']['c']);
-		endif;
-		if ( is_resource ($dbr['gi']['p']) ) :
+		if ( is_resource ($dbr['gi']['p']) )
 			GeoIP_close ($dbr['gi']['p']);
-		endif;
 	}
 	// }}}
 
-	// {{{ (string) krisp::kr_error (void)
+	// {{{ (string) KRISP::kr_error (void)
 	/**
 	 * Return libkrisp error string
 	 *
@@ -198,7 +217,7 @@ class krisp
 	 * @parma	void
 	 */
 	function kr_error () {
-		return $this->err;
+		return self::$err;
 	}
 	// }}}
 }
