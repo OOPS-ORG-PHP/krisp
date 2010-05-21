@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-	<!-- $Id: package.xml,v 1.10 2009-10-21 17:42:35 oops Exp $ -->
+	<!-- $Id: package.xml,v 1.11 2010-05-21 15:39:20 oops Exp $ -->
 	<name>krisp</name>
 	<channel>pear.oops.org</channel>
 	<summary>php pure code for search krisp database</summary>
@@ -13,7 +13,7 @@
 		<active>yes</active>
 	</lead>
 	<date>2009-10-22</date>
-	<time>02:41:03</time>
+	<time>04:24:18</time>
 	<version>
 		<release>1.2.1</release>
 		<api>1.2.0</api>
@@ -27,17 +27,18 @@
 - changed subdirectory name to KRISP
 - changed class name to upper case (from krisp to KRSIP)
 - fixed db error when don&apos;t exists userdb
+- If ccode is KR, print with local character set about iname, city, region.
 	</notes>
 	<contents>
 		<dir name="/">
 			<dir name="KRISP">
 				<file role="php" md5sum="dc082cc7f307a5fb75d9ab42d8dbba1a"        name="db.php" />
-				<file role="php" md5sum="cd8760ac5fb0ac4b578b83a151c16683" name="georegion.php" />
-				<file role="php" md5sum="555e197d2b2eb776f28f276ccc2745e3"     name="krisp.php"     />
-				<file role="php" md5sum="eb34ccea11150c515802599217f0264c"       name="pdo.php" />
+				<file role="php" md5sum="43ec8fe1bdf6dfd05be0e6265c801bee" name="georegion.php" />
+				<file role="php" md5sum="8be81e0315901221c79a7592f3a2d375"     name="krisp.php"     />
+				<file role="php" md5sum="e07586efc08f2a5d1144d95ec1fc941c"       name="pdo.php" />
 				<file role="php" md5sum="fab20b3bb9e93e0176c1dc940f4bbac9"    name="sqlite.php" />
 			</dir> <!-- //krisp -->
-			<file md5sum="dcf69067bb16dbd88ec90876414cc685" name="krisp.php" role="php" />
+			<file md5sum="2c5831521f971cde6eea4c23c7200b40" name="krisp.php" role="php" />
 		</dir> <!-- / -->
 	</contents>
 	<dependencies>
@@ -158,6 +159,7 @@
 - changed subdirectory name to KRISP
 - changed class name to upper case (from krisp to KRSIP)
 - fixed db error when don&apos;t exists userdb
+- If ccode is KR, print with local character set about iname, city, region.
 </notes>
 		</release>
 	</changelog>
