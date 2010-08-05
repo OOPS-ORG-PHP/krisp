@@ -1,4 +1,4 @@
-$Id: README,v 1.7 2009-10-21 17:42:35 oops Exp $
+$Id: README,v 1.8 2010-08-05 14:34:25 oops Exp $
 
 PEAR krisp::
 
@@ -6,26 +6,23 @@ krisp package 는 mod_krisp extension 을 사용하기 힘든 환경이나 또는 mod_krisp 대
 신 사용할 수 있는 pure php pear code 이다.  사용법은 소스안의 test.php 를 참고하
 여, 이 파일에 함수 proto type 에 대한 설명이 주석으로 제공이 된다.
 
-또한, krisp library 는 GeoIP library 의 데이터를 처리할 수 있는데, pear krisp 에
-서는 mod_geoip extension 이 설치가 되어 있어야 GeoIP database 정보를 가져올수 있
-다. mod_geoip 는 http://maxmind.com 에서 제공하는 extension 을 사용할 수는 없고,
-ftp://mirror.oops.org/pub/oops/php/extensions/mod_geoip/ 에서 받은 것으로 사용을
-해야 한다. maxmind 에서 제공하는 extension 의 성능및 기능이 너무 좋지 않아, 새로
-만든 것이다.
-
-다시 말하자면, mirror.oops.org 에 있는 mod_geoip 는 maxmind.com 에서 제공하는 것
-과는 다른 extension 이다. (물론 기능은 같다)
-
+이 버전은 libkrisp 3.0.0 이상의 database scheme이 필요하며, 이전 버전의 database
+를 사용하려고 한다면 pear_krisp 1.x 버전을 사용하도록 한다.
 
 
 요구사항::
 
-krisp pear package 1.1.0 부터는 mod_geoip 1.1.0 이상 버전이 필요하다.
-krisp pear package 1.2.0 부터는 libkrisp 2.1.0 이상 버전이 필요하다.
-krisp pear package 1.2.1 부터는 php 5 이상을 지원 합니다.
+libkrisp 3.0.0 이상 버전의 database shcme
+IPCALC pear package (http://pear.oops.org/)
+  IPCALC pear package는 pear.oops.org에서 제공 한다. http://pear.oops.org/ 를 참
+  조하여 설치를 하도록 한다. 간단하게
+
+  [root@main ~] pear channel-discover pear.oops.org
+  [root@main ~] pear install oops/IPCALC
+
+  명령으로 설치가 가능하다.
 
 
 관련문서::
 
-사용법이나 기타 사항에 대해서는 http://devel.oops.org/index.php?c=5 를 참조한다.
-pear_krisp pear package document is located in http://devel.oops.org/index.php?c=5
+소스 코드의 test.php를 참조 하도록 한다.

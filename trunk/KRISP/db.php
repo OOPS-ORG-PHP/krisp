@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: db.php,v 1.6 2009-10-21 17:21:15 oops Exp $
+// $Id: db.php,v 1.7 2010-08-05 14:34:25 oops Exp $
 
 class KRISP_db
 {
@@ -45,17 +45,29 @@ class KRISP_db
 		$this->otype = &self::$otype;
 	}
 
-	function kr_dbConnect ($database) {
+	function connect ($database) {
 		if ( ! trim ($database) ) {
 			self::$err = "nothing database name";
 			return false;
 		}
 
+		$nodb = 0;
+		if ( ! file_exists ($database) )
+			$nodb = 1;
+
 		switch (self::$type) {
 			case 'sqlite' :
-				break;
 			default :
-				$database = self::$dbn[$this->type] . ':' . $database;
+				if ( self::$type != 'sqlite3' )
+					$nodb = 0;
+
+				if ( ! $nodb )
+					$database = self::$dbn[$this->type] . ':' . $database;
+		}
+
+		if ( $nodb ) {
+			self::$err = sprintf ("%s not found\n", $database ? $database : 'Database file');
+			return false;
 		}
 
 		$c = self::$db->sql_open ($database);
@@ -66,21 +78,17 @@ class KRISP_db
 		return $c;
 	}
 
-	function kr_dbSelect ($dbh, $sql) {
+	function select ($dbh, $sql, &$r) {
 		$r = self::$db->sql_select ($dbh, $sql);
-		if ( $r === false ) {
+		if ( $r === false )
 			self::$err = self::$db->sql_error ();
-			return false;
-		}
-
-		return $r;
 	}
 
-	function kr_dbClose ($dbh) {
+	function close ($dbh) {
 		self::$db->sql_close ($dbh);
 	}
 
-	function kr_dbError () {
+	function error () {
 		return self::$err;
 	}
 }
