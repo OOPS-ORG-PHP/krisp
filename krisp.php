@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2009 OOPS.org
  * @license		GPL v2
- * @version		CVS: $Id: krisp.php,v 1.13 2009-10-21 19:22:30 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.13.2.1 2010-08-05 14:54:36 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
@@ -33,58 +33,58 @@ class KRISP
 	// {{{ properties
 	/**
 	 * KRSIP pear version
-	 * @accss	public
+	 * @access	public
 	 * @const	string
 	 */
 	const VERSION = '1.2.1';
 	/**
 	 * KRSIP pear numeric style version
-	 * @accss	public
+	 * @access	public
 	 * @const	string
 	 */
 	const UVERSION = '001002001';
 	/**
 	 * libkrisp backend database handle 
-	 * @accss	private
+	 * @access	private
 	 * @var		resource
 	 */
 	static private $db;
 	/**
 	 * Error messages
-	 * @accss	public
+	 * @access	public
 	 * @var		string
 	 */
 	static public $err;
 	/**
 	 * Whether suooprt geoip extension no don't
-	 * @accss	private
+	 * @access	private
 	 * @var		integer
 	 */
 	static private $geoipset = 0;
 	/**
 	 * Whether check geoip database or don't
-	 * @accss	public
+	 * @access	public
 	 * @var		string
 	 */
 	static public $geocity = false;
 	/**
 	 * GeoIP.dat open flag.
 	 * Defaults 'GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE'
-	 * @accss	public
+	 * @access	public
 	 * @var		and operation (integer)
 	 */
 	static public $geoip_type;
 	/**
 	 * GeoIPISP.dat open flag.
 	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
-	 * @accss	public
+	 * @access	public
 	 * @var		and operation (integer)
 	 */
 	static public $geoisp_type;
 	/**
 	 * GeoIPCity.dat open flag.
 	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
-	 * @accss	public
+	 * @access	public
 	 * @var		and operation (integer)
 	 */
 	static public $geocity_type;
