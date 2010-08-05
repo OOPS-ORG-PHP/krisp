@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2010 OOPS.org
  * @license		LGPL
- * @version		CVS: $Id: krisp.php,v 1.14 2010-08-05 14:34:25 oops Exp $
+ * @version		CVS: $Id: krisp.php,v 1.15 2010-08-05 14:52:11 oops Exp $
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */
@@ -31,31 +31,31 @@ class KRISP
 	// {{{ properties
 	/**
 	 * KRSIP pear version
-	 * @accss	public
+	 * @access	public
 	 * @const	string
 	 */
 	const VERSION = '2.0.0';
 	/**
 	 * KRSIP pear numeric style version
-	 * @accss	public
+	 * @access	public
 	 * @const	string
 	 */
 	const UVERSION = '002000000';
 	/**
 	 * libkrisp backend database handle 
-	 * @accss	private
+	 * @access	private
 	 * @var		resource
 	 */
 	static private $climode = false;
 	/**
 	 * libkrisp backend database handle 
-	 * @accss	private
+	 * @access	private
 	 * @var		resource
 	 */
 	static private $db;
 	/**
 	 * Error messages
-	 * @accss	public
+	 * @access	public
 	 * @var		string
 	 */
 	static public $err;
