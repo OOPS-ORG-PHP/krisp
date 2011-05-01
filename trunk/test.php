@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?
-# $Id: test.php,v 1.8 2010-08-05 14:34:25 oops Exp $
+# $Id$
 
 require_once "krisp.php";
 

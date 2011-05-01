@@ -14,7 +14,7 @@
  * @author		JoungKyun.Kim <http://oops.org>
  * @copyright	1997-2010 OOPS.org
  * @license		LGPL
- * @version		CVS: $Id: krisp.php,v 1.15 2010-08-05 14:52:11 oops Exp $
+ * @version		CVS: $Id$
  * @link		http://pear.oops.org/package/krisp
  * @since		File available since release 0.0.1
  */

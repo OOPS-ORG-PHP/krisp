@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: krisp.php,v 1.18 2010-08-05 14:34:25 oops Exp $
+// $Id$
 
 require_once 'ipcalc.php';
 require_once 'KRISP/db.php';

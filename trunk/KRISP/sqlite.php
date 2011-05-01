@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: sqlite.php,v 1.5 2009-10-21 17:21:16 oops Exp $
+// $Id$
 
 class KRISP_sqlite
 {
