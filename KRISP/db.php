@@ -16,7 +16,7 @@
 // | Author: JoungKyun Kim <http://www.oops.org>                          |
 // +----------------------------------------------------------------------+
 //
-// $Id: db.php,v 1.7 2010-08-05 14:34:25 oops Exp $
+// $Id$
 
 class KRISP_db
 {
