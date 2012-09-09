@@ -19,7 +19,13 @@
  * @filesource
  */
 
+/**
+ * import KRISP_db class
+ */
 require_once "KRISP/db.php";
+/**
+ * import KRISP_engine class
+ */
 require_once 'KRISP/krisp.php';
 
 /**
