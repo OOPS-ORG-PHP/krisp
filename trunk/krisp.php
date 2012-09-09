@@ -3,20 +3,20 @@
  * Project: krisp :: KRISP database frontend
  * File:    krisp.php
  *
- * PHP Version 5
+ * The libkrisp is supported database that includes informations
+ * of Nation/ISP about IP address. The KRISP class is supported
+ * libkrisp API that is written with php.
  *
- * Copyright (c) 1997-2010 JoungKyun.Kim
- *
- * LICENSE: LGPL
- *
- * @category	Database
- * @package		krisp
- * @author		JoungKyun.Kim <http://oops.org>
- * @copyright	1997-2010 OOPS.org
- * @license		LGPL
- * @version		CVS: $Id$
- * @link		http://pear.oops.org/package/krisp
- * @since		File available since release 0.0.1
+ * @category    Database
+ * @package     krisp
+ * @author      JoungKyun.Kim <http://oops.org>
+ * @copyright   (c) 2012 JoungKyun.Kim
+ * @license     LGPL
+ * @version     $Id$
+ * @link        http://pear.oops.org/package/krisp
+ * @since       File available since release 0.0.1
+ * @example     pear_krisp/test.php Sample code of krisp class
+ * @filesource
  */
 
 require_once "KRISP/db.php";
@@ -29,18 +29,18 @@ require_once 'KRISP/krisp.php';
 class KRISP
 {
 	// {{{ properties
+	/**#@+
+	 * @access public
+	 */
 	/**
 	 * KRSIP pear version
-	 * @access	public
-	 * @const	string
 	 */
 	const VERSION = '2.0.0';
 	/**
 	 * KRSIP pear numeric style version
-	 * @access	public
-	 * @const	string
 	 */
 	const UVERSION = '002000000';
+	/**#@-*/
 	/**
 	 * libkrisp backend database handle 
 	 * @access	private
@@ -203,7 +203,7 @@ class KRISP
 	 *
 	 * @access	public
 	 * @return	string	libkrisp error messages.
-	 * @parma	void
+	 * @param	void
 	 */
 	function error () {
 		return self::$err;

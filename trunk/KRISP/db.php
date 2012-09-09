@@ -1,36 +1,78 @@
 <?php
-//
-// +----------------------------------------------------------------------+
-// | PHP Version 5                                                        |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2006 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Author: JoungKyun Kim <http://www.oops.org>                          |
-// +----------------------------------------------------------------------+
-//
-// $Id$
+/**
+ * Project: krisp :: KRISP database frontend
+ * File:    KRISP/db.php
+ *
+ * Sub package of krisp package. The package is supported db abstraction
+ * layer for krips logic.
+ *
+ * @category    Database
+ * @package     krisp
+ * @subpackage  KRISP_db
+ * @author      JoungKyun.Kim <http://oops.org>
+ * @copyright   (c) 2012 JoungKyun.Kim
+ * @license     LGPL
+ * @version     $Id$
+ * @link        http://pear.oops.org/package/krisp
+ * @since       File available since release 0.0.1
+ * @filesource
+ */
 
+/**
+ * DB abstraction layer class
+ * 
+ * @package krisp
+ */
 class KRISP_db
 {
+	// {{{ properties
+	/**#@+
+	 * @access public
+	 * @static
+	 */
+	/**
+	 * database type
+	 * @var string
+	 */
 	static public $type;
+	/**
+	 * DB handler
+	 * @var object
+	 */
 	static public $db;
+	/**
+	 * get error messages
+	 * @var string
+	 */
 	static public $err;
+	/**
+	 * name of database class
+	 * @var string
+	 */
 	static public $otype;
+	/**#@-*/
 
+	/**
+	 * Supported db list
+	 * @access private
+	 * @var array
+	 * @static
+	 */
 	static private $dbn = array (
 		'sqlite'  => 'sqlite2',
 		'sqlite3' => 'sqlite',
 		'mysql'   => 'mysql'
 	);
+	// }}}
 
+	// {{{ (void) KRISP_db::__construct ($t)
+	/**
+	 * Initialized KRISP_db class
+	 *
+	 * @access public
+	 * @return void
+	 * @param  string database type
+	 */
 	function __construct ($t) {
 		self::$type = $t;
 		self::$otype = ( $t == 'sqlite' ) ? "KRISP_{$t}" : 'KRISP_pdo';
@@ -44,7 +86,16 @@ class KRISP_db
 		$this->err   = &self::$err;
 		$this->otype = &self::$otype;
 	}
+	// }}}
 
+	// {{{ (object) connect ($database)
+	/**
+	 * open the database handle
+	 *
+	 * @access public
+	 * @return resource database handle object
+	 * @param string database path
+	 */
 	function connect ($database) {
 		if ( ! trim ($database) ) {
 			self::$err = "nothing database name";
@@ -77,20 +128,49 @@ class KRISP_db
 
 		return $c;
 	}
+	// }}}
 
+	// {{{ (void) select ($dbh, $sql, &$r) {
+	/**
+	 * execute db query
+	 *
+	 * @access public
+	 * @return void
+	 * @param object DB handler
+	 * @param string SQL query
+	 * @param array Query result
+	 */
 	function select ($dbh, $sql, &$r) {
 		$r = self::$db->sql_select ($dbh, $sql);
 		if ( $r === false )
 			self::$err = self::$db->sql_error ();
 	}
+	// }}}
 
+	// {{{ (void) close ($dbh) {
+	/**
+	 * Close db handle
+	 *
+	 * @access public
+	 * @return void
+	 * @param object DB handler
+	 */
 	function close ($dbh) {
 		self::$db->sql_close ($dbh);
 	}
+	// }}}
 
+	// {{{ function error () {
+	/**
+	 * retrun db error messages
+	 *
+	 * @access public
+	 * @return string
+	 */
 	function error () {
 		return self::$err;
 	}
+	// }}}
 }
 
 /*
