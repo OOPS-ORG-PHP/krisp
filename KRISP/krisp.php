@@ -1,32 +1,69 @@
 <?php
-//
-// +----------------------------------------------------------------------+
-// | PHP Version 5                                                        |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2003 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Author: JoungKyun Kim <http://www.oops.org>                          |
-// +----------------------------------------------------------------------+
-//
-// $Id$
+/**
+ * Project: krisp :: KRISP database frontend
+ * File:    KRISP/krisp.php
+ *
+ * Sub package of krisp package. The package is includes KRISP logics
+ *
+ * @category    Database
+ * @package     krisp
+ * @subpackage  KRISP_engine
+ * @author      JoungKyun.Kim <http://oops.org>
+ * @copyright   (c) 2012 JoungKyun.Kim
+ * @license     LGPL
+ * @version     $Id$
+ * @link        http://pear.oops.org/package/krisp
+ * @since       File available since release 0.0.1
+ * @filesource
+ */
 
+/**
+ * import IPCALC (pear.oops.org/IPCALC) class
+ */
 require_once 'ipcalc.php';
+/**
+ * import KRISP_db class
+ */
 require_once 'KRISP/db.php';
 
+/**
+ * Main engine of KRISP class
+ * 
+ * @package krisp
+ */
 class KRISP_engine
 {
+	// {{{ properties
+	/**#@+
+	 * @access public
+	 * @static
+	 */
+	/**
+	 * database handler
+	 * @var object
+	 */
 	static public $db;
+	/**
+	 * KRISP error messsages
+	 * @var string
+	 */
 	static public $err;
+	/**
+	 * object of ISP structrure
+	 * @var object
+	 */
 	static public $isp;
+	/**#@-*/
+	// }}}
 
+	// {{{ (void) __construct ($dbr)
+	/**
+	 * Initialize KRISP engine and open database
+	 *
+	 * @access public
+	 * @return void
+	 * @param  resource database handler
+	 */
 	function __construct ($dbr) {
 		self::$db = new krisp_db ($dbr['type']);
 		self::$isp = (object) array (
@@ -46,7 +83,18 @@ class KRISP_engine
 		$this->err  = &self::$err;
 		$this->isp  = &self::$isp;
 	}
+	// }}}
 
+	// {{{ (boolean) getISPinfo ($dbh, $key, $table = null)
+	/**
+	 * get information of given key
+	 *
+	 * @access public
+	 * @return boolean
+	 * @param  object  database handle
+	 * @param  integer value of db start field
+	 * @param  string  db table name
+	 */
 	function getISPinfo ($dbh, $key, $table = null) {
 		$table_name = $table ? $table : 'krisp';
 
@@ -92,7 +140,19 @@ class KRISP_engine
 
 		return true;
 	}
+	// }}}
 
+	// {{{ (object) search ($dbr, $host, $charset = 'utf8') {
+	/**
+	 * Search given hostname or ip address on krisp database and returns
+	 * information of given hostname of ip address.
+	 *
+	 * @access  public
+	 * @return  object
+	 * @param   resource database handle by KRISP::open
+	 * @param   string   ipv4 ip address
+	 * @param   string   (optional) charset of output
+	 */
 	function search ($dbr, $host, $charset = 'utf8') {
 		$_tmp = explode ('.', $host);
 
@@ -117,7 +177,20 @@ class KRISP_engine
 
 		return self::$isp;
 	}
+	// }}}
 
+	// {{{ (object) search_ex ($dbr, $host, $table, $charset = 'utf8')
+	/**
+	 * Search given hostname or ip address on user define database and returns
+	 * information of given hostname of ip address.
+	 *
+	 * @access public
+	 * @return object
+	 * @param  resource database handle by KRISP::open
+	 * @param  string   ipv4 dotted ip address
+	 * @param  string   user define table
+	 * @param  string   (optional) charset of output
+	 */
 	function search_ex ($dbr, $host, $table, $charset = 'utf8') {
 		$_tmp = explode ('.', $host);
 
@@ -137,10 +210,19 @@ class KRISP_engine
 
 		return self::$isp;
 	}
+	// }}}
 
+	// {{{ (string) krisp_error (void)
+	/**
+	 * return krips error messages
+	 *
+	 * @access public
+	 * @return string
+	 */
 	function krisp_error () {
 		return self::$err;
 	}
+	// }}}
 }
 
 /*
