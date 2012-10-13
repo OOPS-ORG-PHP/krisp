@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?
-# $Id$
+# $Id: test.php,v 1.7 2009-10-21 19:22:30 oops Exp $
 
 require_once "krisp.php";
 
@@ -20,27 +20,39 @@ $kr = new krisp ("sqlite3");
 /*
  * open krisp database
  *
- * resource KRISP::kr_open (database_path)
+ * resource krisp::kr_open (database_path)
  *
  * if failed, return FALSE
  *
+ * $kr->geocity = 1   => search GeoIPCity database. set 0, don't search
+ * $kr->geo_type      => GeoIP database open type (default: GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE)
+ * $kr->geoisp_type   => GeoIPISP database open type (default: GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE)
+ * $kr->geocity_type  => GeoIPCity database open type (default: GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE)
+ *
+ * GeoIP database open type :
+ *       GEOIP_STANDARD
+ *       GEOIP_MEMORY_CACHE
+ *       GEOIP_INDEX_CACHE
+ *       GEOIP_CEHCK_CACHE
+ *       see also GeoIP C API Source code (GeoIP_new)
+ *
  */
-$c = $kr->open ("/usr/share/krisp/krisp.dat");
+$c = $kr->kr_open ("/usr/share/krisp/krisp.dat");
 
 /*
  * print krisp error message
  *
- * string KRISP::error (void)
+ * string krisp::kr_error (void)
  */
 if ( $c === FALSE ) {
-	echo "ERROR: " . $kr->error () . "\n";
+	echo "ERROR: " . $kr->kr_error () . "\n";
 	exit (1);
 }
 
 /*
  * search krisp database
  *
- * array KRISP::search (krisp handle, host[, charset = utf8])
+ * array krisp::kr_search (krisp handle, host)
  *
  *   return:
  *      array (
@@ -53,46 +65,30 @@ if ( $c === FALSE ) {
  *             iname,      // ISP name
  *             ccode,      // GeoIP code
  *             cname,      // GeoIP name
+ *             city,       // GeoIP city name
+ *             region,     // GeoIP retion name
  *            );
  *
  */
-$r = $kr->search ($c, $argv[1]);
+$r = $kr->kr_search ($c, $argv[1]);
 print_r ($r);
-
-/*
- * search user defined database
- *
- * array KRISP::search_ex (krisp handle, host, table[, charset = utf8])
- *
- *   return:
- *      array (
- *             key,
- *             ip,
- *             netmask,
- *             network,
- *             broadcast,
- *             dummy, // array
- *            );
- *
- */
 
 /*
  * close krisp database
  */
-$kr->close ($c);
+$kr->kr_close ($c);
 
 echo "*************** Self   mode test ***************\n";
 
 KRISP::init ('sqlite3');
 #KRISP::$geocity = false;
-$c = KRISP::open ('/usr/share/krisp/krisp.dat');
+$c = KRISP::kr_open ('/usr/share/krisp/krisp.dat');
 if ( $c === false ) {
-	echo "ERROR: " . KRISP::error () . "\n";
+	echo "ERROR: " . KRISP::kr_error () . "\n";
 	exit (1);
 }
-$r = KRISP::search ($c, $argv[1]);
-#$r = KRISP::search ($c, $argv[1], 'cp949');
+$r = KRISP::kr_search ($c, $argv[1]);
 print_r ($r);
-KRISP::close ($c);
+KRISP::kr_close ($c);
 
 ?>

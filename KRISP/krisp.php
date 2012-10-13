@@ -1,75 +1,60 @@
 <?php
-/**
- * Project: krisp :: KRISP database frontend
- * File:    KRISP/krisp.php
- *
- * Sub package of krisp package. The package is includes KRISP logics
- *
- * @category    Database
- * @package     krisp
- * @subpackage  KRISP_engine
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2012 JoungKyun.Kim
- * @license     LGPL
- * @version     $Id$
- * @link        http://pear.oops.org/package/krisp
- * @since       File available since release 0.0.1
- * @filesource
- */
+//
+// +----------------------------------------------------------------------+
+// | PHP Version 5                                                        |
+// +----------------------------------------------------------------------+
+// | Copyright (c) 1997-2003 The PHP Group                                |
+// +----------------------------------------------------------------------+
+// | This source file is subject to version 2.02 of the PHP license,      |
+// | that is bundled with this package in the file LICENSE, and is        |
+// | available at through the world-wide-web at                           |
+// | http://www.php.net/license/2_02.txt.                                 |
+// | If you did not receive a copy of the PHP license and are unable to   |
+// | obtain it through the world-wide-web, please send a note to          |
+// | license@php.net so we can mail you a copy immediately.               |
+// +----------------------------------------------------------------------+
+// | Author: JoungKyun Kim <http://www.oops.org>                          |
+// +----------------------------------------------------------------------+
+//
+// $Id: krisp.php,v 1.17 2009-10-21 19:22:30 oops Exp $
 
-/**
- * import IPCALC (pear.oops.org/IPCALC) class
- */
-require_once 'ipcalc.php';
-/**
- * import KRISP_db class
- */
 require_once 'KRISP/db.php';
+require 'KRISP/georegion.php';
 
-/**
- * Main engine of KRISP class
- * 
- * @package krisp
- */
 class KRISP_engine
 {
-	// {{{ properties
-	/**#@+
-	 * @access public
-	 * @static
-	 */
-	/**
-	 * database handler
-	 * @var object
-	 */
 	static public $db;
-	/**
-	 * KRISP error messsages
-	 * @var string
-	 */
 	static public $err;
-	/**
-	 * object of ISP structrure
-	 * @var object
-	 */
-	static public $isp;
-	/**#@-*/
-	// }}}
+	static public $utf8 = false;
+	static public $isp = array (
+		'key'       => '',
+		'ip'        => '',
+		'netmask'   => '',
+		'network'   => '',
+		'broadcast' => '',
+		'icode'     => '--',
+		'iname'     => 'N/A',
+		'ccode'     => '--',
+		'cname'     => 'N/A',
+		'city'      => 'N/A',
+		'region'    => 'N/A'
+	);
 
-	// {{{ (void) __construct ($dbr)
-	/**
-	 * Initialize KRISP engine and open database
-	 *
-	 * @access public
-	 * @return void
-	 * @param  resource database handler
-	 */
+	static public $host = array (
+		'ccode'     => '',
+		'cname'     => '',
+		'icode'     => '',
+		'iname'     => '',
+		'city'      => '',
+		'region'    => '',
+		'flag'      => 0
+	);
+
 	function __construct ($dbr) {
 		self::$db = new krisp_db ($dbr['type']);
-		self::$isp = (object) array (
+		self::$isp = array (
+			'key'       => '',
 			'ip'        => '',
-			'start'     => '',
-			'end'       => '',
 			'netmask'   => '',
 			'network'   => '',
 			'broadcast' => '',
@@ -77,152 +62,229 @@ class KRISP_engine
 			'iname'     => 'N/A',
 			'ccode'     => '--',
 			'cname'     => 'N/A',
+			'city'      => 'N/A',
+			'region'    => 'N/A'
+		);
+
+		self::$host = array (
+			'ccode'     => '',
+			'cname'     => '',
+			'icode'     => '',
+			'iname'     => '',
+			'city'      => '',
+			'region'    => '',
+			'flag'      => 0
 		);
 
 		$this->db   = &self::$db;
 		$this->err  = &self::$err;
 		$this->isp  = &self::$isp;
+		$this->host = &self::$host;
+		$this->utf8 = &self::$utf8;
 	}
-	// }}}
 
-	// {{{ (boolean) getISPinfo ($dbh, $key, $table = null)
-	/**
-	 * get information of given key
-	 *
-	 * @access public
-	 * @return boolean
-	 * @param  object  database handle
-	 * @param  integer value of db start field
-	 * @param  string  db table name
-	 */
-	function getISPinfo ($dbh, $key, $table = null) {
-		$table_name = $table ? $table : 'krisp';
+	function get_netmask ($dbh, $aclass) {
+		$sql = "SELECT subnet FROM netmask WHERE net = '$aclass'";
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
 
-		$lkey = IPCALC::ip2long ($key);
-		$sql = "SELECT * FROM {$table_name} WHERE start <= '{$lkey}' ORDER by start DESC LIMIT 1";
-		self::$db->select ($dbh, $sql, $r);
-
-		if ( $r === false ) {
-			self::$err = self::$db->error ();
-			return $r;
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
+			return NULL;
 		}
 
-		self::$isp->ip = $key;
-		self::$isp->start = $r[0]['start'];
-		self::$isp->end   = $r[0]['end'];
+		$_r = array ();
 
-		if ( $table !== null ) {
-			unset (self::$isp->ccode);
-			unset (self::$isp->cname);
-			unset (self::$isp->icode);
-			unset (self::$isp->iname);
-			self::$isp->dummy = explode ('|', $r[0]['data']);
+		if ( ! is_array ($r) )
+			return NULL;
 
-			self::$isp->netmask   = IPCALC::guess_netmask (self::$isp->start, self::$isp->end);
-			self::$isp->network   = IPCALC::network (self::$isp->start, self::$isp->netmask);
-			self::$isp->broadcast = IPCALC::broadcast (self::$isp->start, self::$isp->netmask);
+		foreach ( $r as $v )
+			$_r[] = $v['subnet'];
 
-			return true;
+		return $_r;
+	}
+
+	function kr_ip2long ($v) {
+		return sprintf ("%032b", ip2long ($v));
+	}
+
+	function getISPinfo ($dbh, $key) {
+		$sql = "SELECT * FROM isp WHERE longip = '$key'";
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
+
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
+			return 1;
 		}
 
-		$data = explode ('|', $r[0]['data']);
-		self::$isp->ccode = $data[0];
-		self::$isp->cname = $data[1];
-		self::$isp->icode = $data[2];
-		self::$isp->iname = $data[3];
+		self::$isp['key'] = $key;
+		self::$isp['netmask'] = $r[0]['netmask'];
+		self::$isp['network'] = $r[0]['network'];
+		self::$isp['broadcast'] = $r[0]['broadcast'];
+		self::$isp['iname'] = $r[0]['organization'] ? $r[0]['organization'] : 'N/A';
+		self::$isp['icode'] = $r[0]['servicename'] ? $r[0]['servicename'] : '--';
 
-		if ( ! self::$isp->icode && self::$isp->iname )
-			self::$isp->icode = self::$isp->iname;
+		if ( self::$isp['iname'] != 'N/A' && self::$isp['icode'] == '--' )
+			self::$isp['icode'] = self::$isp['iame'];
 
-		self::$isp->netmask   = IPCALC::guess_netmask (self::$isp->start, self::$isp->end);
-		self::$isp->network   = IPCALC::network (self::$isp->start, self::$isp->netmask);
-		self::$isp->broadcast = IPCALC::broadcast (self::$isp->start, self::$isp->netmask);
+		if ( self::$isp['icode'] ) {
+			self::$isp['ccode'] = 'KR';
+			self::$isp['cname'] = 'Korea, Republic of';
+		}
 
-		return true;
+		return 0;
 	}
-	// }}}
 
-	// {{{ (object) search ($dbr, $host, $charset = 'utf8') {
-	/**
-	 * Search given hostname or ip address on krisp database and returns
-	 * information of given hostname of ip address.
-	 *
-	 * @access  public
-	 * @return  object
-	 * @param   resource database handle by KRISP::open
-	 * @param   string   ipv4 ip address
-	 * @param   string   (optional) charset of output
-	 */
-	function search ($dbr, $host, $charset = 'utf8') {
+	function getHostInfo ($dbh, $host) {
+		if ( $dbh === FALSE ) :
+			return 1;
+		endif;
+		$_tmp = explode ('.', $host);
+		$cclass = "{$_tmp[0]}.{$_tmp[1]}.{$_tmp[2]}.0";
+		$net = bindec (self::kr_ip2long ($cclass));
+
+		$sql = sprintf ('SELECT * FROM userdb WHERE longip = \'%s\'', $net);
+		$r = self::$db->kr_dbSelect ($dbh, $sql);
+
+		if ( $r === FALSE ) {
+			self::$err = self::$db->kr_dbError ();
+			return 1;
+		}
+
+		self::$host['ccode']  = $r[0]['country_code'];
+		self::$host['cname']  = $r[0]['country'];
+		self::$host['icode']  = $r[0]['isp_code'];
+		self::$host['iname']  = $r[0]['isp'];
+		self::$host['city']   = $r[0]['city'];
+		self::$host['region'] = $r[0]['region'];
+		self::$host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
+
+		if ( preg_match ('/([^,]+),(.*)/', self::$host['city'], $m) ) {
+			self::$host['city'] = $m[1];
+			self::$host['retion'] = $m[2];
+		}
+
+		return 0;
+	}
+
+	function search ($dbr, $host) {
 		$_tmp = explode ('.', $host);
 
 		if ( count ($_tmp) != 4 )
 			return self::$isp;
 
-		self::$isp->ip = $host;
+		self::$isp['ip'] = $host;
 
-		if ( self::getISPinfo ($dbr['handle'], $host) === false )
-			return false;
+		$aclass = $_tmp[0];
+		$mask_r = self::get_netmask ($dbr['handle'], $aclass);
 
-		if ( ! trim (self::$isp->icode) ) {
-			self::$isp->icode = '--';
-			self::$isp->iname = 'N/A';
+		if ( is_array ($mask_r) ) {
+			$ip_c = self::kr_ip2long (self::$isp['ip']);
+
+			foreach ( $mask_r as $v ) {
+				$mask = self::kr_ip2long ($v);
+				$mask_c = $mask & $ip_c;
+				$key = bindec ($mask_c);
+
+				if ( self::getISPinfo ($dbr['handle'], $key) )
+					continue;
+
+				$compare = self::kr_ip2long (self::$isp['netmask']);
+				$compare = bindec ($compare & $ip_c);
+
+				if ( $key == $compare ) {
+					$r = 1;
+					break;
+				}
+
+			}
 		}
 
-		if ( $charset != 'utf8' ) {
-			$target = array ('iname');
+		if ( ! trim (self::$isp['icode']) ) {
+			self::$isp['icode'] = '--';
+			self::$isp['iname'] = 'N/A';
+		}
+
+		if ( extension_loaded ('geoip') ) {
+			if ( is_resource ($dbr['gi']['d']) ) {
+				$gir = GeoIP_id_by_name ($dbr['gi']['d'], $host);
+				self::$isp['ccode'] = $gir['code'];
+				self::$isp['cname'] = $gir['name'];
+			}
+			unset ($gir);
+			if ( is_resource ($dbr['gi']['c']) ) {
+				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
+				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
+				#	self::$isp['city'] = $gir['region'] . " ";
+				#endif;
+				#self::$isp['city'] .= $gir['city'];
+
+				self::$isp['region'] = $gir['region'] ? $gir['region'] : 'N/A';
+				self::$isp['city'] = $gir['city'];
+
+				if ( ! self::$isp['city'] )
+					self::$isp['city'] = "N/A";
+			}
+			if ( is_resource ($dbr['gi']['p']) ) {
+				$gisp = GeoIP_org_by_name ($dbr['gi']['p'], $host);
+				if ( $gisp && self::$isp['iname'] == 'N/A' ) {
+					self::$isp['icode'] = $gisp;
+					self::$isp['iname'] = $gisp;
+				}
+			}
+		}
+
+		if ( ! self::getHostInfo ($dbr['uhandle'], self::$isp['ip']) ) {
+			if ( self::$host['flag'] ) {
+				self::$isp['ccode'] = self::$host['ccode'] ? self::$host['ccode'] : self::$isp['ccode'];
+				self::$isp['cname'] = self::$host['cname'] ? self::$host['cname'] : self::$isp['cname'];
+				self::$isp['icode'] = self::$host['icode'] ? self::$host['icode'] : self::$isp['icode'];
+				self::$isp['iname'] = self::$host['iname'] ? self::$host['iname'] : self::$isp['iname'];
+				self::$isp['city'] = self::$host['city'] ? self::$host['city'] : self::$isp['city'];
+				self::$isp['region'] = self::$host['region'] ? self::$host['region'] : self::$isp['region'];
+				if ( self::$host['city'] && ! self::$host['region'] )
+					self::$isp['region'] = 'N/A';
+			} else {
+				if ( self::$isp['ccode'] == "--" && self::$host['ccode'] )
+					self::$isp['ccode'] = self::$host['ccode'];
+				if ( self::$isp['cname'] == "N/A" && self::$host['cname'] )
+					self::$isp['cname'] = self::$host['cname'];
+
+				if ( self::$isp['icode'] == "--" && self::$host['icode'] )
+					self::$isp['icode'] = self::$host['icode'];
+				if ( self::$isp['iname'] == "N/A" && self::$host['iname'] )
+					self::$isp['iname'] = self::$host['iname'];
+
+				if ( self::$isp['city'] == "N/A" && self::$host['city'] )
+					self::$isp['city'] = self::$host['city'];
+				if ( self::$isp['region'] == "N/A" && self::$host['region'] )
+					self::$isp['region'] = self::$host['region'];
+			}
+		}
+
+		if ( self::$isp['ccode'] == 'KR' && isset ($GLOBALS['FIPS_K']['cityMap_en'][self::$isp['city']]) )
+			self::$isp['city'] = $GLOBALS['FIPS_K']['cityMap_en'][self::$isp['city']];
+
+		$gvar = ( self::$isp['ccode'] == 'CA' || self::$isp['ccode'] == 'US' ) ?
+					'ISO' : 'FIPS';
+		# region => ${$gvar}[nation_code][region_code]
+		if ( self::$isp['ccode'] == 'KR' )
+			self::$isp['region'] = $GLOBALS['FIPS_K']['long'][self::$isp['region']];
+		else
+			self::$isp['region'] = $GLOBALS[$gvar][self::$isp['ccode']][self::$isp['region']];
+		self::$isp['region'] = self::$isp['region'] ? self::$isp['region'] : 'N/A';
+
+		if ( self::$isp['ccode'] == 'KR' && self::$utf8 ) {
+			$target = array ('iname', 'city', 'region');
 			foreach ( $target as $var )
-				self::$isp->$var = iconv ('utf-8//IGNORE', $charset, self::$isp->$var);
+				self::$isp[$var] = iconv ('euc-kr', 'utf-8//IGNORE', self::$isp[$var]);
 		}
 
 		return self::$isp;
 	}
-	// }}}
 
-	// {{{ (object) search_ex ($dbr, $host, $table, $charset = 'utf8')
-	/**
-	 * Search given hostname or ip address on user define database and returns
-	 * information of given hostname of ip address.
-	 *
-	 * @access public
-	 * @return object
-	 * @param  resource database handle by KRISP::open
-	 * @param  string   ipv4 dotted ip address
-	 * @param  string   user define table
-	 * @param  string   (optional) charset of output
-	 */
-	function search_ex ($dbr, $host, $table, $charset = 'utf8') {
-		$_tmp = explode ('.', $host);
-
-		if ( count ($_tmp) != 4 )
-			return self::$isp;
-
-		self::$isp->ip = $host;
-
-		if ( self::getISPinfo ($dbr['handle'], $host, $table) === false )
-			return self::$isp;
-
-		if ( $charset != 'utf8' ) {
-			$target = array ('iname');
-			foreach ( $target as $var )
-				self::$isp->$var = iconv ('utf-8//IGNORE', $charset, self::$isp->$var);
-		}
-
-		return self::$isp;
-	}
-	// }}}
-
-	// {{{ (string) krisp_error (void)
-	/**
-	 * return krips error messages
-	 *
-	 * @access public
-	 * @return string
-	 */
 	function krisp_error () {
 		return self::$err;
 	}
-	// }}}
 }
 
 /*

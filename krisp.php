@@ -3,29 +3,25 @@
  * Project: krisp :: KRISP database frontend
  * File:    krisp.php
  *
- * The libkrisp is supported database that includes informations
- * of Nation/ISP about IP address. The KRISP class is supported
- * libkrisp API that is written with php.
+ * PHP Version 5
  *
- * @category    Database
- * @package     krisp
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2012 JoungKyun.Kim
- * @license     LGPL
- * @version     $Id$
- * @link        http://pear.oops.org/package/krisp
- * @since       File available since release 0.0.1
- * @example     pear_krisp/test.php Sample code of krisp class
- * @filesource
+ * Copyright (c) 1997-2009 JoungKyun.Kim
+ *
+ * LICENSE: GPL v2
+ *
+ * @category	Database
+ * @package		krisp
+ * @author		JoungKyun.Kim <http://oops.org>
+ * @copyright	1997-2009 OOPS.org
+ * @license		GPL v2
+ * @version		CVS: $Id: krisp.php,v 1.13 2009-10-21 19:22:30 oops Exp $
+ * @link		http://pear.oops.org/package/krisp
+ * @since		File available since release 0.0.1
  */
 
-/**
- * import KRISP_db class
- */
+$_SERVER['CLI'] = $_SERVER['DOCUMENT_ROOT'] ? '' : 'yes';
+
 require_once "KRISP/db.php";
-/**
- * import KRISP_engine class
- */
 require_once 'KRISP/krisp.php';
 
 /**
@@ -35,36 +31,69 @@ require_once 'KRISP/krisp.php';
 class KRISP
 {
 	// {{{ properties
-	/**#@+
-	 * @access public
-	 */
 	/**
 	 * KRSIP pear version
+	 * @accss	public
+	 * @const	string
 	 */
-	const VERSION = '2.0.0';
+	const VERSION = '1.2.1';
 	/**
 	 * KRSIP pear numeric style version
+	 * @accss	public
+	 * @const	string
 	 */
-	const UVERSION = '002000000';
-	/**#@-*/
+	const UVERSION = '001002001';
 	/**
 	 * libkrisp backend database handle 
-	 * @access	private
-	 * @var		resource
-	 */
-	static private $climode = false;
-	/**
-	 * libkrisp backend database handle 
-	 * @access	private
+	 * @accss	private
 	 * @var		resource
 	 */
 	static private $db;
 	/**
 	 * Error messages
-	 * @access	public
+	 * @accss	public
 	 * @var		string
 	 */
 	static public $err;
+	/**
+	 * Whether suooprt geoip extension no don't
+	 * @accss	private
+	 * @var		integer
+	 */
+	static private $geoipset = 0;
+	/**
+	 * Whether check geoip database or don't
+	 * @accss	public
+	 * @var		string
+	 */
+	static public $geocity = false;
+	/**
+	 * GeoIP.dat open flag.
+	 * Defaults 'GEOIP_MEMORY_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
+	static public $geoip_type;
+	/**
+	 * GeoIPISP.dat open flag.
+	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
+	static public $geoisp_type;
+	/**
+	 * GeoIPCity.dat open flag.
+	 * Defaults 'GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE'
+	 * @accss	public
+	 * @var		and operation (integer)
+	 */
+	static public $geocity_type;
+	/**
+	 * UTF-8 output
+	 * @access	public
+	 * @var		boolean
+	 */
+	static public $utf8 = false;
 	// }}}
 
 	// {{{ (void) KRISP::__construct ($database = 'sqlite')
@@ -80,7 +109,15 @@ class KRISP
 
 		$this->db           = &self::$db;
 		$this->err          = &self::$err;
-		$this->climode      = &self::$climode;
+		$this->geoipset     = &self::$geoipset;
+		$this->geocity      = &self::$geocity;
+		$this->geoip_type   = &self::$geoip_type;
+		$this->geoisp_type  = &self::$geoisp_type;
+		$this->geocity_type = &self::$geocity_type;
+		$this->utf8         = &self::$utf8;
+
+		if ( preg_match ('/utf[-]?8$/i', $_ENV['LANG']) )
+			self::$utf8 = true;
 	}
 	// }}}
 
@@ -95,37 +132,66 @@ class KRISP
 	 */
 	function init ($database = 'sqlite') {
 		self::$db = new KRISP_db ($database);
-		self::$climode = (php_sapi_name () == 'cli');
+
+		if ( extension_loaded ('geoip') )
+			self::$geoipset = 1;
+		else {
+			if ( @ dl ('geoip.so') )
+				self::$geoipset = 1;
+		}
+
+		if ( self::$geoipset ) {
+			self::$geoip_type   = '';
+			self::$geoisp_type  = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+			self::$geocity_type = GEOIP_INDEX_CACHE | GEOIP_CHECK_CACHE;
+		}
 	}
 	// }}}
 
-	// {{{ (string) KRISP::version (void)
+	// {{{ (string) KRISP::krisp_version (void)
 	/**
 	 * Returns pear_krisp version
 	 *
 	 * @access	public
-	 * @return	string	pear_krisp version
+	 * @return	string
 	 * @param	void
 	 */
-	function version () {
+	function krisp_version () {
 		return self::VERSION;
 	}
 	// }}}
 
-	// {{{ (string) KRISP::uversion (void)
+	// {{{ (string) KRISP::krisp_uversion (void)
 	/**
-	 * Returns pear_krisp version that has numeric strype
+	 * Returns pears version that has numeric strype
 	 *
 	 * @access	public
-	 * @return	string	numeric pear_krisp version
+	 * @return	string
 	 * @param	void
 	 */
-	function uversion () {
+	function krisp_uversion () {
 		return self::UVERSION;
 	}
 	// }}}
 
-	// {{{ (resource) KRISP::open ($database)
+	// {{{ priavte (resource) KRISP::kr_userdb ($f)
+	private function kr_userdb ($f) {
+		$u = '';
+
+		if ( file_exists ($f . "-userdb") )
+			$u = $f . "-userdb";
+		else {
+			preg_match ('/(.*)\.dat/', $f, $m);
+			$u = $m[1] . "-userdb.dat";
+
+			$u = file_exists ($u) ? $u : '';
+		}
+        
+		return $u;
+	}
+	// }}}
+
+	// {{{ (resource) KRISP::kr_open ($database)
 	/**
 	 * Open the krisp database and return database handler
 	 *
@@ -134,84 +200,80 @@ class KRISP
 	 * @param	string	Database name. If database type is set sqlite or sqlite3, set
 	 *                  sqlite database file path.
 	 */
-	function open ($database) {
-		$c = self::$db->connect ($database);
+	function kr_open ($database) {
+		$c = self::$db->kr_dbConnect ($database);
 		if ( $c === false ) {
-			self::$err = self::$db->error ();
+			self::$err = self::$db->kr_dbError ();
 			return false;
 		}
 
-		$r = array ('handle' => $c, 'type' => self::$db->type);
+		/* connect user database */
+		$u = self::$db->kr_dbConnect (self::kr_userdb ($database));
+
+		$gi = null;
+
+		if ( self::$geoipset ) {
+			$gi['d'] = GeoIP_open (self::$geoip_type);
+			$gi['p'] = GeoIP_open (GEOIP_ISP_EDITION, self::$geoisp_type);
+			$gi['c'] = self::$geocity ? GeoIP_open (GEOIP_CITY_EDITION_REV0, self::$geocity_type) : null;
+		}
+
+		$r = array ('handle' => $c, 'uhandle' => $u, 'type' => self::$db->type, 'gi' => $gi);
 		
 		return $r;
 	}
 	// }}}
 
-	// {{{ (object) KRISP::search ($dbr, $host[, $charset = 'utf8'])
+	// {{{ (array) KRISP::kr_search ($dbr, $host)
 	/**
 	 * Search given hostname or ip address on krisp database and returns
 	 * information of given hostname of ip address.
 	 *
 	 * @access	public
-	 * @return	object
-	 * @param	resource	database handle by KRISP::open
+	 * @return	array
+	 * @param	resource	database handle by KRISP::kr_open
 	 * @param	string		search host or ip address
-	 * @param	string	(optional)	charset of output
 	 */
-	function search ($dbr, $host, $charset = 'utf8') {
+	function kr_search ($dbr, $host) {
 		$s = new KRISP_engine ($dbr);
+		$s->utf8 = self::$utf8;
 
 		$host = gethostbyname ($host);
-		$r = $s->search ($dbr, $host, $charset);
+		$r = $s->search ($dbr, $host);
 
 		return $r;
 	}
 	// }}}
 
-	// {{{ (object) KRISP::search_ex ($dbr, $host, $table[, $charset = 'utf8'])
+	// {{{ (void) KRISP::kr_close ($dbr)
 	/**
-	 * Search given hostname or ip address on user define database and returns
-	 * information of given hostname of ip address.
-	 *
-	 * @access	public
-	 * @return	object
-	 * @param	resource	database handle by KRISP::open
-	 * @param	string		search host or ip address
-	 * @param	string		user define table
-	 * @param	string	(optional)	charset of output
-	 */
-	function search_ex ($dbr, $host, $table, $charset = 'utf8') {
-		$s = new KRISP_engine ($dbr);
-
-		$host = gethostbyname ($host);
-		$r = $s->search_ex ($dbr, $host, $table, $charset);
-
-		return $r;
-	}
-	// }}}
-
-	// {{{ (void) KRISP::close ($dbr)
-	/**
-	 * Close database handle that opend by KRISP::open
+	 * Close database handle that opend by KRISP::kr_open
 	 *
 	 * @access	public
 	 * @return	void
-	 * @param	resource database handle by KRISP::open
+	 * @param	resource database handle by KRISP::kr_open
 	 */
-	function close ($dbr) {
-		self::$db->close ($dbr['handle']);
+	function kr_close ($dbr) {
+		self::$db->kr_dbClose ($dbr['handle']);
+		self::$db->kr_dbClose ($dbr['uhandle']);
+		if ( is_resource ($dbr['gi']['d']) )
+			GeoIP_close ($dbr['gi']['d']);
+		if ( is_resource ($dbr['gi']['c']) )
+			GeoIP_close ($dbr['gi']['c']);
+		if ( is_resource ($dbr['gi']['p']) )
+			GeoIP_close ($dbr['gi']['p']);
 	}
 	// }}}
 
-	// {{{ (string) KRISP::error (void)
+	// {{{ (string) KRISP::kr_error (void)
 	/**
 	 * Return libkrisp error string
 	 *
 	 * @access	public
 	 * @return	string	libkrisp error messages.
-	 * @param	void
+	 * @parma	void
 	 */
-	function error () {
+	function kr_error () {
 		return self::$err;
 	}
 	// }}}
