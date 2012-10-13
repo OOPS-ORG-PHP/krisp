@@ -1,228 +1,262 @@
 <?php
-/**
- * Project: krisp :: KRISP database frontend
- * File:    KRISP/krisp.php
- *
- * Sub package of krisp package. The package is includes KRISP logics
- *
- * @category    Database
- * @package     krisp
- * @subpackage  KRISP_engine
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2012 JoungKyun.Kim
- * @license     LGPL
- * @version     $Id$
- * @link        http://pear.oops.org/package/krisp
- * @since       File available since release 0.0.1
- * @filesource
- */
+//
+// +----------------------------------------------------------------------+
+// | PHP Version 5                                                        |
+// +----------------------------------------------------------------------+
+// | Copyright (c) 1997-2003 The PHP Group                                |
+// +----------------------------------------------------------------------+
+// | This source file is subject to version 2.02 of the PHP license,      |
+// | that is bundled with this package in the file LICENSE, and is        |
+// | available at through the world-wide-web at                           |
+// | http://www.php.net/license/2_02.txt.                                 |
+// | If you did not receive a copy of the PHP license and are unable to   |
+// | obtain it through the world-wide-web, please send a note to          |
+// | license@php.net so we can mail you a copy immediately.               |
+// +----------------------------------------------------------------------+
+// | Author: JoungKyun Kim <http://www.oops.org>                          |
+// +----------------------------------------------------------------------+
+//
+// $Id: krisp.php,v 1.11 2006-12-01 09:39:34 oops Exp $
 
-/**
- * import IPCALC (pear.oops.org/IPCALC) class
- */
-require_once 'ipcalc.php';
-/**
- * import KRISP_db class
- */
-require_once 'KRISP/db.php';
-
-/**
- * Main engine of KRISP class
- * 
- * @package krisp
- */
-class KRISP_engine
+class krisp_engine
 {
-	// {{{ properties
-	/**#@+
-	 * @access public
-	 * @static
-	 */
-	/**
-	 * database handler
-	 * @var object
-	 */
-	static public $db;
-	/**
-	 * KRISP error messsages
-	 * @var string
-	 */
-	static public $err;
-	/**
-	 * object of ISP structrure
-	 * @var object
-	 */
-	static public $isp;
-	/**#@-*/
-	// }}}
+	var $db;
+	var $err;
+	var $geocity = 0;
+	var $ISO;
+	var $FIPS;
+	var $isp = array (
+		'key'       => '',
+		'ip'        => '',
+		'netmask'   => '',
+		'network'   => '',
+		'broadcast' => '',
+		'icode'     => '--',
+		'iname'     => 'N/A',
+		'ccode'     => '--',
+		'cname'     => 'N/A',
+		'city'      => 'N/A',
+		'region'    => 'N/A'
+	);
 
-	// {{{ (void) __construct ($dbr)
-	/**
-	 * Initialize KRISP engine and open database
-	 *
-	 * @access public
-	 * @return void
-	 * @param  resource database handler
-	 */
-	function __construct ($dbr) {
-		self::$db = new krisp_db ($dbr['type']);
-		self::$isp = (object) array (
-			'ip'        => '',
-			'start'     => '',
-			'end'       => '',
-			'netmask'   => '',
-			'network'   => '',
-			'broadcast' => '',
-			'icode'     => '--',
-			'iname'     => 'N/A',
-			'ccode'     => '--',
-			'cname'     => 'N/A',
-		);
+	var $host = array (
+		'ccode'     => '',
+		'cname'     => '',
+		'icode'     => '',
+		'iname'     => '',
+		'city'      => '',
+		'region'    => '',
+		'flag'      => 0
+	);
 
-		$this->db   = &self::$db;
-		$this->err  = &self::$err;
-		$this->isp  = &self::$isp;
+	function krisp_engine ($dbr) {
+		require_once 'krisp/db.php';
+		require 'krisp/georegion.php';
+		$this->db = new krisp_db ($dbr['type']);
+		$this->ISO = $ISO;
+		$this->FIPS = $FIPS;
 	}
-	// }}}
 
-	// {{{ (boolean) getISPinfo ($dbh, $key, $table = null)
-	/**
-	 * get information of given key
-	 *
-	 * @access public
-	 * @return boolean
-	 * @param  object  database handle
-	 * @param  integer value of db start field
-	 * @param  string  db table name
-	 */
-	function getISPinfo ($dbh, $key, $table = null) {
-		$table_name = $table ? $table : 'krisp';
+	function get_netmask ($dbh, $aclass) {
+		$sql = "SELECT subnet FROM netmask WHERE net = '$aclass'";
+		$r = $this->db->kr_dbSelect ($dbh, $sql);
 
-		$lkey = IPCALC::ip2long ($key);
-		$sql = "SELECT * FROM {$table_name} WHERE start <= '{$lkey}' ORDER by start DESC LIMIT 1";
-		self::$db->select ($dbh, $sql, $r);
+		if ( $r === FALSE ) :
+			$this->err = $this->db->kr_dbError ();
+			return NULL;
+		endif;
 
-		if ( $r === false ) {
-			self::$err = self::$db->error ();
-			return $r;
-		}
+		$_r = array ();
 
-		self::$isp->ip = $key;
-		self::$isp->start = $r[0]['start'];
-		self::$isp->end   = $r[0]['end'];
+		if ( ! is_array ($r) ) :
+			return NULL;
+		endif;
 
-		if ( $table !== null ) {
-			unset (self::$isp->ccode);
-			unset (self::$isp->cname);
-			unset (self::$isp->icode);
-			unset (self::$isp->iname);
-			self::$isp->dummy = explode ('|', $r[0]['data']);
+		foreach ( $r as $v ) :
+			$_r[] = $v['subnet'];
+		endforeach;
 
-			self::$isp->netmask   = IPCALC::guess_netmask (self::$isp->start, self::$isp->end);
-			self::$isp->network   = IPCALC::network (self::$isp->start, self::$isp->netmask);
-			self::$isp->broadcast = IPCALC::broadcast (self::$isp->start, self::$isp->netmask);
-
-			return true;
-		}
-
-		$data = explode ('|', $r[0]['data']);
-		self::$isp->ccode = $data[0];
-		self::$isp->cname = $data[1];
-		self::$isp->icode = $data[2];
-		self::$isp->iname = $data[3];
-
-		if ( ! self::$isp->icode && self::$isp->iname )
-			self::$isp->icode = self::$isp->iname;
-
-		self::$isp->netmask   = IPCALC::guess_netmask (self::$isp->start, self::$isp->end);
-		self::$isp->network   = IPCALC::network (self::$isp->start, self::$isp->netmask);
-		self::$isp->broadcast = IPCALC::broadcast (self::$isp->start, self::$isp->netmask);
-
-		return true;
+		return $_r;
 	}
-	// }}}
 
-	// {{{ (object) search ($dbr, $host, $charset = 'utf8') {
-	/**
-	 * Search given hostname or ip address on krisp database and returns
-	 * information of given hostname of ip address.
-	 *
-	 * @access  public
-	 * @return  object
-	 * @param   resource database handle by KRISP::open
-	 * @param   string   ipv4 ip address
-	 * @param   string   (optional) charset of output
-	 */
-	function search ($dbr, $host, $charset = 'utf8') {
+	function kr_ip2long ($v) {
+		return sprintf ("%032b", ip2long ($v));
+	}
+
+	function getISPinfo ($dbh, $key) {
+		$sql = "SELECT * FROM isp WHERE longip = '$key'";
+		$r = $this->db->kr_dbSelect ($dbh, $sql);
+
+		if ( $r === FALSE ) :
+			$this->err = $this->db->kr_dbError ();
+			return 1;
+		endif;
+
+		$this->isp['key'] = $key;
+		$this->isp['netmask'] = $r[0]['netmask'];
+		$this->isp['network'] = $r[0]['network'];
+		$this->isp['broadcast'] = $r[0]['broadcast'];
+		$this->isp['iname'] = $r[0]['organization'] ? $r[0]['organization'] : 'N/A';
+		$this->isp['icode'] = $r[0]['servicename'] ? $r[0]['servicename'] : '--';
+
+		if ( $this->isp['iname'] != 'N/A' && $this->isp['icode'] == '--' ) :
+			$this->isp['icode'] = $this->isp['iame'];
+		endif;
+
+		if ( $this->isp['icode'] ) :
+			$this->isp['ccode'] = 'KR';
+			$this->isp['cname'] = 'Korea, Republic of';
+		endif;
+
+		return 0;
+	}
+
+	function getHostInfo ($dbh, $host) {
+		$_tmp = explode ('.', $host);
+		$cclass = "{$_tmp[0]}.{$_tmp[1]}.{$_tmp[2]}.0";
+		$net = bindec ($this->kr_ip2long ($cclass));
+
+		$sql = sprintf ('SELECT * FROM userdb WHERE longip = \'%s\'', $net);
+		$r = $this->db->kr_dbSelect ($dbh, $sql);
+
+		if ( $r === FALSE ) :
+			$this->err = $this->db->kr_dbError ();
+			return 1;
+		endif;
+
+		$this->host['ccode']  = $r[0]['country_code'];
+		$this->host['cname']  = $r[0]['country'];
+		$this->host['icode']  = $r[0]['isp_code'];
+		$this->host['iname']  = $r[0]['isp'];
+		$this->host['city']   = $r[0]['city'];
+		$this->host['region'] = $r[0]['region'];
+		$this->host['flag']   = $r[0]['flag'] ? $r[0]['flag'] : 0;
+
+		if ( preg_match ('/([^,]+),(.*)/', $this->host['city'], $m) ) :
+			$this->host['city'] = $m[1];
+			$this->host['retion'] = $m[2];
+		endif;
+
+		return 0;
+	}
+
+	function search ($dbr, $host) {
 		$_tmp = explode ('.', $host);
 
-		if ( count ($_tmp) != 4 )
-			return self::$isp;
+		if ( count ($_tmp) != 4 ) :
+			return $this->isp;
+		endif;
 
-		self::$isp->ip = $host;
+		$this->isp['ip'] = $host;
 
-		if ( self::getISPinfo ($dbr['handle'], $host) === false )
-			return false;
+		$aclass = $_tmp[0];
+		$mask_r = $this->get_netmask ($dbr['handle'], $aclass);
 
-		if ( ! trim (self::$isp->icode) ) {
-			self::$isp->icode = '--';
-			self::$isp->iname = 'N/A';
-		}
+		if ( is_array ($mask_r) ) :
+			$ip_c = $this->kr_ip2long ($this->isp['ip']);
 
-		if ( $charset != 'utf8' ) {
-			$target = array ('iname');
-			foreach ( $target as $var )
-				self::$isp->$var = iconv ('utf-8//IGNORE', $charset, self::$isp->$var);
-		}
+			foreach ( $mask_r as $v ) :
+				$mask = $this->kr_ip2long ($v);
+				$mask_c = $mask & $ip_c;
+				$key = bindec ($mask_c);
 
-		return self::$isp;
+				if ( $this->getISPinfo ($dbr['handle'], $key) ) :
+					continue;
+				endif;
+
+				$compare = $this->kr_ip2long ($this->isp['netmask']);
+				$compare = bindec ($compare & $ip_c);
+
+				if ( $key == $compare ) :
+					$r = 1;
+					break;
+				endif;
+
+			endforeach;
+		endif;
+
+		if ( ! trim ($this->isp['icode']) ) :
+			$this->isp['icode'] = '--';
+			$this->isp['iname'] = 'N/A';
+		endif;
+
+		if ( extension_loaded ('geoip') ) :
+			if ( is_resource ($dbr['gi']['d']) ) :
+				$gir = GeoIP_id_by_name ($dbr['gi']['d'], $host);
+				$this->isp['ccode'] = $gir['code'];
+				$this->isp['cname'] = $gir['name'];
+			endif;
+			unset ($gir);
+			if ( is_resource ($dbr['gi']['c']) ) :
+				$gir = GeoIP_record_by_name ($dbr['gi']['c'], $host);
+				#if ( $gir['region'] && ! is_numeric ($gir['region']) ) :
+				#	$this->isp['city'] = $gir['region'] . " ";
+				#endif;
+				#$this->isp['city'] .= $gir['city'];
+
+				$this->isp['region'] = $gir['region'] ? $gir['region'] : 'N/A';
+				$this->isp['city'] = $gir['city'];
+
+				if ( ! $this->isp['city'] ) :
+					$this->isp['city'] = "N/A";
+				endif;
+			endif;
+			if ( is_resource ($dbr['gi']['p']) ) :
+				$gisp = GeoIP_org_by_name ($dbr['gi']['p'], $host);
+				if ( $gisp && $this->isp['iname'] == 'N/A' ) :
+					$this->isp['icode'] = $gisp;
+					$this->isp['iname'] = $gisp;
+				endif;
+			endif;
+		endif;
+
+		if ( ! $this->getHostInfo ($dbr['uhandle'], $this->isp['ip']) ) :
+			if ( $this->host['flag'] ) :
+				$this->isp['ccode'] = $this->host['ccode'] ? $this->host['ccode'] : $this->isp['ccode'];
+				$this->isp['cname'] = $this->host['cname'] ? $this->host['cname'] : $this->isp['cname'];
+				$this->isp['icode'] = $this->host['icode'] ? $this->host['icode'] : $this->isp['icode'];
+				$this->isp['iname'] = $this->host['iname'] ? $this->host['iname'] : $this->isp['iname'];
+				$this->isp['city'] = $this->host['city'] ? $this->host['city'] : $this->isp['city'];
+				$this->isp['region'] = $this->host['region'] ? $this->host['region'] : $this->isp['region'];
+				if ( $this->host['city'] && ! $this->host['region'] ) :
+					$this->isp['region'] = 'N/A';
+				endif;
+			else :
+				if ( $this->isp['ccode'] == "--" && $this->host['ccode'] ) :
+					$this->isp['ccode'] = $this->host['ccode'];
+				endif;
+				if ( $this->isp['cname'] == "N/A" && $this->host['cname'] ) :
+					$this->isp['cname'] = $this->host['cname'];
+				endif;
+
+				if ( $this->isp['icode'] == "--" && $this->host['icode'] ) :
+					$this->isp['icode'] = $this->host['icode'];
+				endif;
+				if ( $this->isp['iname'] == "N/A" && $this->host['iname'] ) :
+					$this->isp['iname'] = $this->host['iname'];
+				endif;
+
+				if ( $this->isp['city'] == "N/A" && $this->host['city'] ) :
+					$this->isp['city'] = $this->host['city'];
+				endif;
+				if ( $this->isp['region'] == "N/A" && $this->host['region'] ) :
+					$this->isp['region'] = $this->host['region'];
+				endif;
+			endif;
+		endif;
+
+		$gvar = ( $this->isp['ccode'] == 'CA' || $this->isp['ccode'] == 'US' ) ?
+					'ISO' : 'FIPS';
+		# region => ${$gvar}[nation_code][region_code]
+		$this->isp['region'] = $this->{$gvar}[$this->isp['ccode']][$this->isp['region']];
+		$this->isp['region'] = $this->isp['region'] ? $this->isp['region'] : 'N/A';
+
+		return $this->isp;
 	}
-	// }}}
 
-	// {{{ (object) search_ex ($dbr, $host, $table, $charset = 'utf8')
-	/**
-	 * Search given hostname or ip address on user define database and returns
-	 * information of given hostname of ip address.
-	 *
-	 * @access public
-	 * @return object
-	 * @param  resource database handle by KRISP::open
-	 * @param  string   ipv4 dotted ip address
-	 * @param  string   user define table
-	 * @param  string   (optional) charset of output
-	 */
-	function search_ex ($dbr, $host, $table, $charset = 'utf8') {
-		$_tmp = explode ('.', $host);
-
-		if ( count ($_tmp) != 4 )
-			return self::$isp;
-
-		self::$isp->ip = $host;
-
-		if ( self::getISPinfo ($dbr['handle'], $host, $table) === false )
-			return self::$isp;
-
-		if ( $charset != 'utf8' ) {
-			$target = array ('iname');
-			foreach ( $target as $var )
-				self::$isp->$var = iconv ('utf-8//IGNORE', $charset, self::$isp->$var);
-		}
-
-		return self::$isp;
-	}
-	// }}}
-
-	// {{{ (string) krisp_error (void)
-	/**
-	 * return krips error messages
-	 *
-	 * @access public
-	 * @return string
-	 */
 	function krisp_error () {
-		return self::$err;
+		return $this->err;
 	}
-	// }}}
 }
 
 /*
