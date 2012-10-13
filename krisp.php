@@ -3,29 +3,23 @@
  * Project: krisp :: KRISP database frontend
  * File:    krisp.php
  *
- * The libkrisp is supported database that includes informations
- * of Nation/ISP about IP address. The KRISP class is supported
- * libkrisp API that is written with php.
+ * PHP Version 5
  *
- * @category    Database
- * @package     krisp
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2012 JoungKyun.Kim
- * @license     LGPL
- * @version     $Id$
- * @link        http://pear.oops.org/package/krisp
- * @since       File available since release 0.0.1
- * @example     pear_krisp/test.php Sample code of krisp class
- * @filesource
+ * Copyright (c) 1997-2010 JoungKyun.Kim
+ *
+ * LICENSE: LGPL
+ *
+ * @category	Database
+ * @package		krisp
+ * @author		JoungKyun.Kim <http://oops.org>
+ * @copyright	1997-2010 OOPS.org
+ * @license		LGPL
+ * @version		CVS: $Id: krisp.php,v 1.14 2010-08-05 14:34:25 oops Exp $
+ * @link		http://pear.oops.org/package/krisp
+ * @since		File available since release 0.0.1
  */
 
-/**
- * import KRISP_db class
- */
 require_once "KRISP/db.php";
-/**
- * import KRISP_engine class
- */
 require_once 'KRISP/krisp.php';
 
 /**
@@ -35,33 +29,33 @@ require_once 'KRISP/krisp.php';
 class KRISP
 {
 	// {{{ properties
-	/**#@+
-	 * @access public
-	 */
 	/**
 	 * KRSIP pear version
+	 * @accss	public
+	 * @const	string
 	 */
 	const VERSION = '2.0.0';
 	/**
 	 * KRSIP pear numeric style version
+	 * @accss	public
+	 * @const	string
 	 */
 	const UVERSION = '002000000';
-	/**#@-*/
 	/**
 	 * libkrisp backend database handle 
-	 * @access	private
+	 * @accss	private
 	 * @var		resource
 	 */
 	static private $climode = false;
 	/**
 	 * libkrisp backend database handle 
-	 * @access	private
+	 * @accss	private
 	 * @var		resource
 	 */
 	static private $db;
 	/**
 	 * Error messages
-	 * @access	public
+	 * @accss	public
 	 * @var		string
 	 */
 	static public $err;
@@ -209,7 +203,7 @@ class KRISP
 	 *
 	 * @access	public
 	 * @return	string	libkrisp error messages.
-	 * @param	void
+	 * @parma	void
 	 */
 	function error () {
 		return self::$err;
