@@ -1,10 +1,6 @@
 #!/usr/bin/php
 <?
-# $Id$
-
 require_once "krisp.php";
-
-echo "*************** Object mode test ***************\n";
 
 /*
  * INIT krisp pear
@@ -20,27 +16,26 @@ $kr = new krisp ("sqlite3");
 /*
  * open krisp database
  *
- * resource KRISP::kr_open (database_path)
+ * resource krisp::kr_open (database_path)
  *
  * if failed, return FALSE
- *
  */
-$c = $kr->open ("/usr/share/krisp/krisp.dat");
+$c = $kr->kr_open ("/usr/share/krisp/krisp.dat");
 
 /*
  * print krisp error message
  *
- * string KRISP::error (void)
+ * string krisp::kr_error (void)
  */
-if ( $c === FALSE ) {
-	echo "ERROR: " . $kr->error () . "\n";
+if ( $c === FALSE ) :
+	echo "ERROR: " . $kr->kr_error () . "\n";
 	exit (1);
-}
+endif;
 
 /*
  * search krisp database
  *
- * array KRISP::search (krisp handle, host[, charset = utf8])
+ * array krisp::kr_search (krisp handle, host)
  *
  *   return:
  *      array (
@@ -49,50 +44,18 @@ if ( $c === FALSE ) {
  *             netmask,
  *             network,
  *             broadcast,
- *             icode,      // ISP code
- *             iname,      // ISP name
- *             ccode,      // GeoIP code
- *             cname,      // GeoIP name
+ *             serv,       // ISP code
+ *             org,        // ISP name
+ *             code,       // GeoIP code
+ *             nation,     // GeoIP name
  *            );
  *
  */
-$r = $kr->search ($c, $argv[1]);
+$r = $kr->kr_search ($c, $argv[1]);
 print_r ($r);
-
-/*
- * search user defined database
- *
- * array KRISP::search_ex (krisp handle, host, table[, charset = utf8])
- *
- *   return:
- *      array (
- *             key,
- *             ip,
- *             netmask,
- *             network,
- *             broadcast,
- *             dummy, // array
- *            );
- *
- */
 
 /*
  * close krisp database
  */
-$kr->close ($c);
-
-echo "*************** Self   mode test ***************\n";
-
-KRISP::init ('sqlite3');
-#KRISP::$geocity = false;
-$c = KRISP::open ('/usr/share/krisp/krisp.dat');
-if ( $c === false ) {
-	echo "ERROR: " . KRISP::error () . "\n";
-	exit (1);
-}
-$r = KRISP::search ($c, $argv[1]);
-#$r = KRISP::search ($c, $argv[1], 'cp949');
-print_r ($r);
-KRISP::close ($c);
-
+$kr->kr_close ($c);
 ?>
