@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?php
 # $Id$
 
 require_once "krisp.php";

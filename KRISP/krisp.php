@@ -78,10 +78,6 @@ class KRISP_engine
 			'ccode'     => '--',
 			'cname'     => 'N/A',
 		);
-
-		$this->db   = &self::$db;
-		$this->err  = &self::$err;
-		$this->isp  = &self::$isp;
 	}
 	// }}}
 

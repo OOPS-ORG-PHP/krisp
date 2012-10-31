@@ -14,8 +14,8 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 		<email>joungkyun@gmail.com</email>
 		<active>yes</active>
 	</lead>
-	<date>2012-09-09</date>
-	<time>21:14:14</time>
+	<date>2012-11-01</date>
+	<time>03:07:56</time>
 	<version>
 		<release>2.0.1</release>
 		<api>2.0.0</api>
@@ -25,17 +25,17 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 		<api>stable</api>
 	</stability>
 	<license>PHP/LGPL</license>
-	<notes>
+	<notes>* fixed E_STRICT problems on PHP 5.4
 </notes>
 	<contents>
 		<dir name="/">
 			<dir name="KRISP">
-				<file role="php" md5sum="110dfa84d9ec6d95ed5dd3016e9846fb"        name="db.php" />
-				<file role="php" md5sum="8faea4560c84d649042a997607735a23"     name="krisp.php" />
-				<file role="php" md5sum="77b89f17d4de939d9bb4318f76b17415"       name="pdo.php" />
-				<file role="php" md5sum="472b3689717e5fb86f85a2646a4f304d"    name="sqlite.php" />
+				<file role="php" md5sum="b7171e788b3f8f7d0fd22b3e5a6261c1"        name="db.php" />
+				<file role="php" md5sum="b94dd0959888d04fbf059bcb9b0d3ee8"     name="krisp.php" />
+				<file role="php" md5sum="d677fc4cec8dbf3f1ec0684d499e655a"       name="pdo.php" />
+				<file role="php" md5sum="82831154d041125c4e8a60a002c46ac2"    name="sqlite.php" />
 			</dir> <!-- //krisp -->
-			<file md5sum="faae79559f3e03ceb45dc6febbc01473" name="krisp.php" role="php" />
+			<file md5sum="5c0e927c851b55a82540e852bff359a3" name="krisp.php" role="php" />
 		</dir> <!-- / -->
 	</contents>
 	<dependencies>
@@ -64,9 +64,9 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 				<release>stable</release>
 				<api>stable</api>
 			</stability>
-			<date>2012-09-09</date>
+			<date>2012-11-01</date>
 			<license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
-			<notes>
+			<notes>* fixed E_STRICT problems on PHP 5.4
 </notes>
 		</release>
 		<release>
