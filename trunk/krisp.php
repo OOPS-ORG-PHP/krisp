@@ -77,10 +77,6 @@ class KRISP
 	 */
 	function __construct ($database = 'sqlite') {
 		self::init ($database);
-
-		$this->db           = &self::$db;
-		$this->err          = &self::$err;
-		$this->climode      = &self::$climode;
 	}
 	// }}}
 
@@ -93,7 +89,7 @@ class KRISP
 	 * @param	string	(optional) Defaults to sqlite. Set type of krisp database.
 	 *                  Support type of database are sqlite3, sqlite, mysql
 	 */
-	function init ($database = 'sqlite') {
+	static function init ($database = 'sqlite') {
 		self::$db = new KRISP_db ($database);
 		self::$climode = (php_sapi_name () == 'cli');
 	}
@@ -107,7 +103,7 @@ class KRISP
 	 * @return	string	pear_krisp version
 	 * @param	void
 	 */
-	function version () {
+	static function version () {
 		return self::VERSION;
 	}
 	// }}}
@@ -120,7 +116,7 @@ class KRISP
 	 * @return	string	numeric pear_krisp version
 	 * @param	void
 	 */
-	function uversion () {
+	static function uversion () {
 		return self::UVERSION;
 	}
 	// }}}
@@ -134,14 +130,15 @@ class KRISP
 	 * @param	string	Database name. If database type is set sqlite or sqlite3, set
 	 *                  sqlite database file path.
 	 */
-	function open ($database) {
+	static function open ($database) {
 		$c = self::$db->connect ($database);
 		if ( $c === false ) {
 			self::$err = self::$db->error ();
 			return false;
 		}
 
-		$r = array ('handle' => $c, 'type' => self::$db->type);
+		$db = self::$db;
+		$r = array ('handle' => $c, 'type' => $db::$type);
 		
 		return $r;
 	}
@@ -158,7 +155,7 @@ class KRISP
 	 * @param	string		search host or ip address
 	 * @param	string	(optional)	charset of output
 	 */
-	function search ($dbr, $host, $charset = 'utf8') {
+	static function search ($dbr, $host, $charset = 'utf8') {
 		$s = new KRISP_engine ($dbr);
 
 		$host = gethostbyname ($host);
@@ -180,7 +177,7 @@ class KRISP
 	 * @param	string		user define table
 	 * @param	string	(optional)	charset of output
 	 */
-	function search_ex ($dbr, $host, $table, $charset = 'utf8') {
+	static function search_ex ($dbr, $host, $table, $charset = 'utf8') {
 		$s = new KRISP_engine ($dbr);
 
 		$host = gethostbyname ($host);
@@ -198,7 +195,7 @@ class KRISP
 	 * @return	void
 	 * @param	resource database handle by KRISP::open
 	 */
-	function close ($dbr) {
+	static function close ($dbr) {
 		self::$db->close ($dbr['handle']);
 	}
 	// }}}
@@ -211,7 +208,7 @@ class KRISP
 	 * @return	string	libkrisp error messages.
 	 * @param	void
 	 */
-	function error () {
+	static function error () {
 		return self::$err;
 	}
 	// }}}

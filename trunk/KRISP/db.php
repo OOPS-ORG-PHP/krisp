@@ -80,11 +80,6 @@ class KRISP_db
 
 		require_once $openfile . ".php";
 		self::$db = new self::$otype;
-
-		$this->type  = &self::$type;
-		$this->db    = &self::$db;
-		$this->err   = &self::$err;
-		$this->otype = &self::$otype;
 	}
 	// }}}
 
@@ -113,7 +108,7 @@ class KRISP_db
 					$nodb = 0;
 
 				if ( ! $nodb )
-					$database = self::$dbn[$this->type] . ':' . $database;
+					$database = self::$dbn[self::$type] . ':' . $database;
 		}
 
 		if ( $nodb ) {

@@ -34,18 +34,6 @@ class KRISP_pdo
 	static public $err;
 	// }}}
 
-	// {{{ (void) __construct (void)
-	/**
-	 * Initialize PDO driver
-	 *
-	 * @access public
-	 * @return void
-	 */
-	function __construct () {
-		$this->err = &self::$err;
-	}
-	// }}}
-
 	// {{{ (object) sql_open ($database)
 	/**
 	 * open the PDO handle
