@@ -37,7 +37,7 @@ class KRISP_db
 	static public $type;
 	/**
 	 * DB handler
-	 * @var object
+	 * @var stdClass
 	 */
 	static public $db;
 	/**
@@ -88,7 +88,7 @@ class KRISP_db
 	 * open the database handle
 	 *
 	 * @access public
-	 * @return resource database handle object
+	 * @return resource|PDL_SQLItE database handle
 	 * @param string database path
 	 */
 	function connect ($database) {
@@ -131,7 +131,7 @@ class KRISP_db
 	 *
 	 * @access public
 	 * @return void
-	 * @param object DB handler
+	 * @param resource|PDO_SQLITE DB handler
 	 * @param string SQL query
 	 * @param array Query result
 	 */
@@ -148,7 +148,7 @@ class KRISP_db
 	 *
 	 * @access public
 	 * @return void
-	 * @param object DB handler
+	 * @param resource|PDO_SQLITE DB handler
 	 */
 	function close ($dbh) {
 		self::$db->sql_close ($dbh);

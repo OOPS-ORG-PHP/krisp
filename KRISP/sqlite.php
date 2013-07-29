@@ -58,7 +58,7 @@ class KRISP_sqlite
 	}
 	// }}}
 
-	// {{{ (object) sql_open ($database)
+	// {{{ (resource) sql_open ($database)
 	/**
 	 * Opens an SQLite database and create the database if it does not exist
 	 *
