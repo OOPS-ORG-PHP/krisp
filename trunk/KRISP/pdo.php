@@ -34,12 +34,12 @@ class KRISP_pdo
 	static public $err;
 	// }}}
 
-	// {{{ (object) sql_open ($database)
+	// {{{ (PDO_SQLITE) sql_open ($database)
 	/**
 	 * open the PDO handle
 	 *
 	 * @access public
-	 * @return resource database handle object
+	 * @return PDO_SQLITE database handle
 	 * @param string database path
 	 */
 	function sql_open ($database) {
@@ -61,7 +61,7 @@ class KRISP_pdo
 	 *
 	 * @access public
 	 * @return array
-	 * @param object DB handler
+	 * @param PDO_SQLITE DB handler
 	 * @param string SQL query
 	 */
 	function sql_select ($dbh, $sql) {

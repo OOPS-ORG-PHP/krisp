@@ -87,7 +87,7 @@ class KRISP_engine
 	 *
 	 * @access public
 	 * @return boolean
-	 * @param  object  database handle
+	 * @param  resource|PDO_SQLITE database handle
 	 * @param  integer value of db start field
 	 * @param  string  db table name
 	 */
@@ -144,8 +144,24 @@ class KRISP_engine
 	 * information of given hostname of ip address.
 	 *
 	 * @access  public
-	 * @return  object
-	 * @param   resource database handle by KRISP::open
+	 * @return  stdClass
+	 *   <pre>
+	 *   stdClass Object
+	 *   (
+	 *       [ip]        => 지정한 IP 주소
+	 *       [start]     => 지정한 IP 주소가 포함된 블럭의 시직 IP 주소
+	 *       [end]       => 지정한 IP 주소가 포함된 블럭의 마지막 IP 주소
+	 *       [netmask]   => 지정한 IP 주소가 포함된 블럭의 네트워크 마스크
+	 *       [network]   => 지정한 IP 주소가 포함된 블럭의 네트워크 주소
+	 *       [broadcast] => 지정한 IP 주소가 포함된 블럭의 브로드캐스트 주소
+	 *       [icode]     => 지정한 IP 주소가 포함된 블럭의 ISP 코드
+	 *       [iname]     => 지정한 IP 주소가 포함된 블럭의 ISP 이름
+	 *       [ccode]     => 지정한 IP 주소가 포함된 블럭의 국가 코드
+	 *       [cname]     => 지정한 IP 주소가 포함된 블럭의 국가 이름
+	 *   )
+	 *   </pre>
+	 *
+	 * @param   resource|PDO_SQLITE database handle by KRISP::open
 	 * @param   string   ipv4 ip address
 	 * @param   string   (optional) charset of output
 	 */
@@ -181,8 +197,8 @@ class KRISP_engine
 	 * information of given hostname of ip address.
 	 *
 	 * @access public
-	 * @return object
-	 * @param  resource database handle by KRISP::open
+	 * @return stdClass
+	 * @param  resource|PDO_SQLITE database handle by KRISP::open
 	 * @param  string   ipv4 dotted ip address
 	 * @param  string   user define table
 	 * @param  string   (optional) charset of output
