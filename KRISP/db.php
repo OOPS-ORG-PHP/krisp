@@ -10,7 +10,7 @@
  * @package     krisp
  * @subpackage  KRISP_db
  * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2012 JoungKyun.Kim
+ * @copyright   (c) 2014 JoungKyun.Kim
  * @license     LGPL
  * @version     $Id$
  * @link        http://pear.oops.org/package/krisp
