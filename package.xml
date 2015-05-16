@@ -15,13 +15,13 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 		<active>yes</active>
 	</lead>
 	<date>2015-05-16</date>
-	<time>22:15:05</time>
+	<time>22:20:56</time>
 	<version>
 		<release>2.0.1</release>
 		<api>2.0.0</api>
 	</version>
 	<stability>
-		<release>devel</release>
+		<release>stable</release>
 		<api>stable</api>
 	</stability>
 	<license>PHP/LGPL</license>
