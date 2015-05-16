@@ -1,89 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-	<!-- $Id$ -->
-	<name>krisp</name>
-	<channel>pear.oops.org</channel>
-	<summary>php pure code for search krisp database</summary>
-	<description>PEAR&apos;s krisp:: package support search krisp database.
+<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>krisp</name>
+ <channel>pear.oops.org</channel>
+ <summary>php pure code for search krisp database</summary>
+ <description>PEAR&apos;s krisp:: package support search krisp database.
 This version is required over libkrisp v3.0.0 database scheme.
-If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
-	</description>
-	<lead>
-		<name>JoungKyun.Kim</name>
-		<user>joungkyun</user>
-		<email>joungkyun@gmail.com</email>
-		<active>yes</active>
-	</lead>
-	<date>2015-05-16</date>
-	<time>22:15:05</time>
-	<version>
-		<release>2.0.1</release>
-		<api>2.0.0</api>
-	</version>
-	<stability>
-		<release>devel</release>
-		<api>stable</api>
-	</stability>
-	<license>PHP/LGPL</license>
-	<notes>* fixed E_STRICT problems on PHP 5.4
+If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x</description>
+ <lead>
+  <name>JoungKyun.Kim</name>
+  <user>joungkyun</user>
+  <email>joungkyun@gmail.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2015-05-16</date>
+ <time>22:15:06</time>
+ <version>
+  <release>2.0.1</release>
+  <api>2.0.0</api>
+ </version>
+ <stability>
+  <release>devel</release>
+  <api>stable</api>
+ </stability>
+ <license>PHP/LGPL</license>
+ <notes>
+* fixed E_STRICT problems on PHP 5.4
 * fixed return wrong data when result is none on search method
-</notes>
-	<contents>
-		<dir name="/">
-			<dir name="KRISP">
-				<file role="php" md5sum="2ec4fd0b8214fd5f2df5cbca2ef16e9d"        name="db.php" />
-				<file role="php" md5sum="9e6b4aef2c1c2dbc211c8b039b7e727a"     name="krisp.php" />
-				<file role="php" md5sum="d06795be61c08b075d84af79872be52b"       name="pdo.php" />
-				<file role="php" md5sum="24093f16b1379c25abdd7e2f73228fc4"    name="sqlite.php" />
-			</dir> <!-- //krisp -->
-			<file md5sum="7337e9dbb467a682fee779c8cb3e0354" name="krisp.php" role="php" />
-		</dir> <!-- / -->
-	</contents>
-	<dependencies>
-		<required>
-			<php>
-				<min>5.0.0</min>
-			</php>
-			<pearinstaller>
-				<min>1.4.0b1</min>
-			</pearinstaller>
-            <package>
-                <name>IPCALC</name>
-                <channel>pear.oops.org</channel>
-                <min>1.0.2</min>
-            </package>
-		</required>
-	</dependencies>
-	<phprelease />
-	<changelog>
-		<release>
-			<version>
-				<release>2.0.1</release>
-				<api>2.0.0</api>
-			</version>
-			<stability>
-				<release>stable</release>
-				<api>stable</api>
-			</stability>
-			<date>2015-05-16</date>
-			<license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
-			<notes>* fixed E_STRICT problems on PHP 5.4
+ </notes>
+ <contents>
+  <dir name="/">
+   <file md5sum="2ec4fd0b8214fd5f2df5cbca2ef16e9d" name="KRISP/db.php" role="php" />
+   <file md5sum="9e6b4aef2c1c2dbc211c8b039b7e727a" name="KRISP/krisp.php" role="php" />
+   <file md5sum="d06795be61c08b075d84af79872be52b" name="KRISP/pdo.php" role="php" />
+   <file md5sum="24093f16b1379c25abdd7e2f73228fc4" name="KRISP/sqlite.php" role="php" />
+   <file md5sum="7337e9dbb467a682fee779c8cb3e0354" name="krisp.php" role="php" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+   <package>
+    <name>IPCALC</name>
+    <channel>pear.oops.org</channel>
+    <min>1.0.2</min>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>2.0.1</release>
+    <api>2.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2015-05-16</date>
+   <license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
+   <notes>
+* fixed E_STRICT problems on PHP 5.4
 * fixed return wrong data when result is none on search method
-</notes>
-		</release>
-		<release>
-			<version>
-				<release>2.0.0</release>
-				<api>2.0.0</api>
-			</version>
-			<stability>
-				<release>stable</release>
-				<api>stable</api>
-			</stability>
-			<date>2010-08-05</date>
-			<license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
-			<notes>- support libkrisp v3.0.0 database scheme
-</notes>
-		</release>
-	</changelog>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>2.0.0</release>
+    <api>2.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-08-05</date>
+   <license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
+   <notes>
+- support libkrisp v3.0.0 database scheme
+   </notes>
+  </release>
+ </changelog>
 </package>
