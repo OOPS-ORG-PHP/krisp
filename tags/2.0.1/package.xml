@@ -19,7 +19,7 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x</descriptio
   <api>2.0.0</api>
  </version>
  <stability>
-  <release>devel</release>
+  <release>stable</release>
   <api>stable</api>
  </stability>
  <license>PHP/LGPL</license>
