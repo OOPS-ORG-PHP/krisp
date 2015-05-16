@@ -107,6 +107,15 @@ class KRISP_engine
 		self::$isp->start = $r[0]['start'];
 		self::$isp->end   = $r[0]['end'];
 
+		if ( self::$isp->end < $lkey ) {
+			self::$isp->start = '0.0.0.0';
+			self::$isp->end   = '0.0.0.0';
+			self::$isp->netmask   = '0.0.0.0';
+			self::$isp->network   = '0.0.0.0';
+			self::$isp->broadcast = '255.255.255.255';
+			return true;
+		}
+
 		if ( $table !== null ) {
 			unset (self::$isp->ccode);
 			unset (self::$isp->cname);
