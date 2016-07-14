@@ -1,7 +1,5 @@
 #!/usr/bin/php
 <?php
-# $Id$
-
 require_once "krisp.php";
 
 echo "*************** Object mode test ***************\n";

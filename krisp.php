@@ -2,20 +2,20 @@
 /**
  * Project: krisp :: KRISP database pear 패키지<br>
  * File:    krisp.php<br>
- * Dependency: {@link http://devel.oops.org/index.php?c=5 libkrisp}
+ * Dependency: {@link https://github.com/Joungkyun/libkrisp libkrisp}
  *
  * libkrisp는 IP address에 대한 국가/ISP 정보를 포함하고 있는 데이터베이스
  * 이다. KRISP pear 패키지는 libkrisp 데이터베이스를 관리하기 위한 PHP로
  * 작성된 코드 이다.
  *
  * 이 패키지를 사용하기 위해서는 시스템에
- * {@link http://devel.oops.org/index.php?c=5 libkrisp}가
+ * {@link https://github.com/Joungkyun/libkrisp libkrisp}가
  * 설치 되어 있어야 한다.
  *
  * @category    Database
  * @package     krisp
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2015 JoungKyun.Kim
+ * @author      JoungKyun.Kim <http://joungkyun.github.com>
+ * @copyright   (c) 2016 JoungKyun.Kim
  * @license     LGPL
  * @version     $Id$
  * @link        http://pear.oops.org/package/krisp

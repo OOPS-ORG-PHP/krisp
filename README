@@ -1,5 +1,3 @@
-$Id$
-
 PEAR krisp::
 
 krisp package 는 mod_krisp extension 을 사용하기 힘든 환경이나 또는 mod_krisp 대

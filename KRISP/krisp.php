@@ -8,10 +8,10 @@
  * @category    Database
  * @package     krisp
  * @subpackage  KRISP_engine
- * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2015 JoungKyun.Kim
+ * @author      JoungKyun.Kim <http://joungkyun.github.com>
+ * @copyright   (c) 2016 JoungKyun.Kim
  * @license     LGPL
- * @version     $Id$
+ * @version     $Id: $
  * @link        http://pear.oops.org/package/krisp
  * @since       File available since release 0.0.1
  * @filesource
