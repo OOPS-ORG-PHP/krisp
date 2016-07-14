@@ -14,10 +14,10 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 		<email>joungkyun@gmail.com</email>
 		<active>yes</active>
 	</lead>
-	<date>2015-05-16</date>
-	<time>22:20:56</time>
+	<date>2016-07-15</date>
+	<time>00:51:01</time>
 	<version>
-		<release>2.0.1</release>
+		<release>2.0.2</release>
 		<api>2.0.0</api>
 	</version>
 	<stability>
@@ -25,18 +25,17 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 		<api>stable</api>
 	</stability>
 	<license>PHP/LGPL</license>
-	<notes>* fixed E_STRICT problems on PHP 5.4
-* fixed return wrong data when result is none on search method
-</notes>
+	<notes>
+	</notes>
 	<contents>
 		<dir name="/">
 			<dir name="KRISP">
-				<file role="php" md5sum="2ec4fd0b8214fd5f2df5cbca2ef16e9d"        name="db.php" />
-				<file role="php" md5sum="9e6b4aef2c1c2dbc211c8b039b7e727a"     name="krisp.php" />
-				<file role="php" md5sum="d06795be61c08b075d84af79872be52b"       name="pdo.php" />
-				<file role="php" md5sum="24093f16b1379c25abdd7e2f73228fc4"    name="sqlite.php" />
+				<file role="php" md5sum="7039902c655504f7739450f3294df5ac"        name="db.php" />
+				<file role="php" md5sum="5dbc0f31220140ff882d872e7ebb0394"     name="krisp.php" />
+				<file role="php" md5sum="fcf9386945fd3345a6d832343bb4f075"       name="pdo.php" />
+				<file role="php" md5sum="a06867b926a387c7f92e4afa9bb1ba74"    name="sqlite.php" />
 			</dir> <!-- //krisp -->
-			<file md5sum="7337e9dbb467a682fee779c8cb3e0354" name="krisp.php" role="php" />
+			<file md5sum="302df1a378dfe6c33d0aeac5af222297" name="krisp.php" role="php" />
 		</dir> <!-- / -->
 	</contents>
 	<dependencies>
@@ -56,6 +55,20 @@ If you use under libkrisp v3.0.0 database scheme, use pear_krisp 1.x
 	</dependencies>
 	<phprelease />
 	<changelog>
+		<release>
+			<version>
+				<release>2.0.2</release>
+				<api>2.0.0</api>
+			</version>
+			<stability>
+				<release>stable</release>
+				<api>stable</api>
+			</stability>
+			<date>2016-07-15</date>
+			<license uri="http://www.gnu.org/licenses/lgpl.txt">PHP/LGPL</license>
+			<notes>
+			</notes>
+		</release>
 		<release>
 			<version>
 				<release>2.0.1</release>
