@@ -12,6 +12,16 @@ krisp package 는 [mod_krisp](https://github.com/OOPS-ORG-PHP/mod_krisp) extensi
 이 버전은 [libkrisp](https://github.com/Joungkyun/libkrisp) 3.0.0 이상의 database scheme이
 필요하며, 이전 버전의 database 를 사용하려고 한다면 pear_krisp 1.x 버전을 사용 하십시오.
 
+## Instasllation:
+
+의존성 패키지 때문에 ***pear*** 명령을 이용하여 설치 하는 것을 권장 합니다.
+
+```bash
+  [root@host ~]$ pear channel-discover pear.oops.org
+  [root@host ~]$ pear install oops/krisp
+```
+
+또는, PHP include_path 옵션 경로상에 압축 파일을 풀어 놓으십시오. 이 경우에는 의존 패키지들을 수동 또는 ***pear*** 명령을 이용하여 설치해야 합니다.
 
 ## Requirements:
 
