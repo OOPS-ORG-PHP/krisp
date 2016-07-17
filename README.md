@@ -1,6 +1,9 @@
 PEAR krisp::
 ====
 
+***krisp*** pear package는 IPv4 주소에 대한 정보를 확인 하거나 또는 Network 계산을 위한
+API를 제공 합니다.
+
 krisp package 는 [mod_krisp](https://github.com/OOPS-ORG-PHP/mod_krisp) extension 을
 사용하기 힘든 환경이나 또는 mod_krisp 대신 사용할 수 있는 pure php pear code 입니다.
 사용법은 소스안의 test.php 를 참고하고, 이 파일에 함수 proto type 에 대한 설명이 주석으로
